@@ -2,17 +2,18 @@ import React from 'react';
 import { ShieldCheck, Zap, Users, Lock, Database, FileSearch, ArrowDown } from 'lucide-react';
 import { Button } from '../components/Button';
 
-// Custom Stylized Lock Icon (Minimalist)
-const StylizedLock = () => (
-  <svg viewBox="0 0 100 100" className="w-full h-full text-white/90">
-    <path d="M30 40 V 25 C 30 10, 70 10, 70 25 V 40" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-    <rect x="20" y="40" width="60" height="50" rx="12" stroke="currentColor" strokeWidth="6" fill="none" />
-    <circle cx="50" cy="60" r="4" fill="currentColor" />
-    <path d="M50 64 V 72" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-    
-    {/* Minimalist Accents */}
-    <circle cx="75" cy="20" r="3" fill="#F0543C" />
-    <path d="M20 80 L 10 90" stroke="#7BC65C" strokeWidth="4" strokeLinecap="round" />
+// Simplified Lock Graphic
+const SimpleLock = () => (
+  <svg viewBox="0 0 200 200" className="w-full h-full text-white drop-shadow-2xl">
+      <path d="M60 80 V 50 C 60 20, 140 20, 140 50 V 80" 
+            fill="none" 
+            stroke="#F0543C" 
+            strokeWidth="20" 
+            strokeLinecap="round" 
+      />
+      <rect x="40" y="80" width="120" height="100" rx="20" fill="#2D2D2D" stroke="white" strokeWidth="8" />
+      <circle cx="100" cy="130" r="16" fill="white" />
+      <path d="M100 130 L 100 160" stroke="white" strokeWidth="12" strokeLinecap="round" />
   </svg>
 );
 
@@ -21,29 +22,29 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
     <div className="w-full pt-0">
       
       {/* 1. HERO: MANIFESTO - Full Height */}
-      <section className="bg-[#F0543C] min-h-screen w-full flex flex-col justify-center items-center text-center px-6 relative overflow-hidden pt-32 pb-20">
+      <section className="bg-[#F0543C] min-h-screen w-full flex flex-col justify-center items-center text-center px-6 relative overflow-hidden pt-32 pb-20 animate-in fade-in zoom-in-95 duration-700">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" 
              style={{ backgroundImage: 'radial-gradient(#fff 2px, transparent 2px)', backgroundSize: '40px 40px' }}>
         </div>
 
         <div className="max-w-7xl mx-auto z-10 space-y-12">
-           <div className="inline-flex items-center gap-3 bg-black/20 backdrop-blur-md px-6 py-3 rounded-full border border-black/10 text-[#1A1A1A] font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all cursor-pointer shadow-lg">
+           <div className="inline-flex items-center gap-3 bg-black/20 backdrop-blur-md px-6 py-3 rounded-full border border-black/10 text-[#1A1A1A] font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all cursor-pointer shadow-lg hover:scale-105">
               <span className="w-3 h-3 bg-white rounded-full animate-ping"></span>
               The Algorithm Safety Net
            </div>
 
-           <h1 className="text-[14vw] md:text-[10rem] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter drop-shadow-sm mix-blend-multiply">
+           <h1 className="text-[14vw] md:text-[10rem] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter drop-shadow-sm mix-blend-multiply animate-in slide-in-from-bottom-10 fade-in duration-1000 delay-200">
              REAL TRUTH. <br/>
              <span className="text-white relative drop-shadow-xl">
                NO STRIKES.
              </span>
            </h1>
            
-           <p className="text-2xl md:text-4xl font-bold text-[#1A1A1A] max-w-4xl mx-auto leading-tight tracking-tight">
+           <p className="text-2xl md:text-4xl font-bold text-[#1A1A1A] max-w-4xl mx-auto leading-tight tracking-tight animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-300">
              We audit your content for liability, cancellation risks, and advertiser safety <span className="underline decoration-4 decoration-white">before</span> you hit publish.
            </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mt-8 scale-110 origin-top">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mt-8 scale-110 origin-top animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-500">
                 <Button size="lg" variant="primary" onClick={() => setPage('studio')} icon={<Zap size={24} />}>
                     Start Audit
                 </Button>
@@ -61,12 +62,12 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       {/* 2. THE NUMBERS: Continuous Section */}
       <section className="bg-[#F5F1E6] py-32 px-6 w-full border-b-2 border-black/5">
         <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-20">
+            <div className="text-center mb-20 animate-in slide-in-from-bottom-10 fade-in duration-700">
                 <h2 className="text-5xl md:text-7xl font-black text-[#1A1A1A] uppercase tracking-tighter">Impact Metrics</h2>
             </div>
             <div className="relative h-[600px] md:h-[400px]">
                 {/* Card 1 */}
-                <div className="absolute top-0 left-0 md:left-0 w-full md:w-1/3 bg-[#1A1A1A] p-10 rounded-3xl shadow-2xl z-30 transform hover:-translate-y-4 transition-transform duration-500 text-white border-4 border-[#F5F1E6]">
+                <div className="absolute top-0 left-0 md:left-0 w-full md:w-1/3 bg-[#1A1A1A] p-10 rounded-[2.5rem] shadow-2xl z-30 transform hover:-translate-y-4 transition-transform duration-500 text-white border-4 border-[#F5F1E6] animate-in slide-in-from-bottom-12 fade-in duration-700 delay-100">
                     <div className="w-20 h-20 bg-[#F0543C] rounded-full flex items-center justify-center mb-6 text-white text-3xl font-black">
                         %
                     </div>
@@ -75,7 +76,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                 </div>
                 
                 {/* Card 2 */}
-                <div className="absolute top-32 md:top-0 left-0 md:left-[30%] w-full md:w-1/3 bg-white p-10 rounded-3xl shadow-2xl z-20 transform hover:-translate-y-4 transition-transform duration-500 border-4 border-[#F5F1E6]">
+                <div className="absolute top-32 md:top-0 left-0 md:left-[30%] w-full md:w-1/3 bg-white p-10 rounded-[2.5rem] shadow-2xl z-20 transform hover:-translate-y-4 transition-transform duration-500 border-4 border-[#F5F1E6] animate-in slide-in-from-bottom-12 fade-in duration-700 delay-200">
                     <div className="w-20 h-20 bg-[#7BC65C] rounded-full flex items-center justify-center mb-6 text-[#1A1A1A] text-3xl font-black">
                         #
                     </div>
@@ -84,7 +85,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                 </div>
 
                 {/* Card 3 */}
-                <div className="absolute top-64 md:top-0 left-0 md:left-[60%] w-full md:w-1/3 bg-[#F0543C] p-10 rounded-3xl shadow-2xl z-10 transform hover:-translate-y-4 transition-transform duration-500 border-4 border-[#F5F1E6]">
+                <div className="absolute top-64 md:top-0 left-0 md:left-[60%] w-full md:w-1/3 bg-[#F0543C] p-10 rounded-[2.5rem] shadow-2xl z-10 transform hover:-translate-y-4 transition-transform duration-500 border-4 border-[#F5F1E6] animate-in slide-in-from-bottom-12 fade-in duration-700 delay-300">
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 text-[#F0543C] text-3xl font-black">
                         0
                     </div>
@@ -100,7 +101,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
          <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#2D2D2D] to-transparent opacity-50"></div>
          
          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
-            <div className="flex-1">
+            <div className="flex-1 animate-in slide-in-from-bottom-16 fade-in duration-1000">
                 <div className="inline-block bg-[#7BC65C] text-[#1A1A1A] px-6 py-2 rounded-full text-sm font-black uppercase tracking-widest mb-8 shadow-[0_0_20px_rgba(123,198,92,0.4)]">
                     Security Protocol: Active
                 </div>
@@ -122,9 +123,9 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                     </div>
                 </div>
             </div>
-            <div className="flex-1 flex justify-center">
-                <div className="w-80 h-80 flex items-center justify-center p-8">
-                     <StylizedLock />
+            <div className="flex-1 flex justify-center animate-in slide-in-from-right-16 fade-in duration-1000">
+                <div className="w-80 h-80 flex items-center justify-center p-8 bg-[#2D2D2D] rounded-[3rem] border-4 border-white/5 shadow-2xl hover:scale-105 transition-transform duration-500">
+                     <SimpleLock />
                 </div>
             </div>
          </div>
@@ -133,7 +134,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       {/* 4. JOURNEY MAP: Full Width */}
       <section className="py-32 px-6 bg-[#F5F1E6] w-full">
         <div className="max-w-5xl mx-auto">
-            <h2 className="text-4xl font-black text-[#1A1A1A] mb-20 text-center uppercase tracking-tight">The Audit Flow</h2>
+            <h2 className="text-4xl font-black text-[#1A1A1A] mb-20 text-center uppercase tracking-tight animate-in slide-in-from-bottom-8">The Audit Flow</h2>
             
             <div className="space-y-4">
                 {[
@@ -142,7 +143,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                     { title: "Flag Review", desc: "You accept edits or nuke segments.", icon: <Users /> },
                     { title: "Clean Export", desc: "Download the safe, monetizable file.", icon: <ShieldCheck /> }
                 ].map((step, i) => (
-                    <div key={i} className="flex gap-8 group">
+                    <div key={i} className="flex gap-8 group animate-in slide-in-from-bottom-12 fade-in duration-700" style={{ animationDelay: `${i * 100}ms` }}>
                         <div className="flex flex-col items-center">
                             <div className="w-16 h-16 bg-white rounded-2xl border-4 border-[#1A1A1A] flex items-center justify-center text-[#1A1A1A] group-hover:bg-[#F0543C] group-hover:border-[#F0543C] group-hover:text-white transition-colors z-10 relative shadow-[4px_4px_0px_#1A1A1A]">
                                 {step.icon}

@@ -69,21 +69,24 @@ export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, fl
       
       {/* Bars Container */}
       <div className="w-full h-full flex items-center justify-between gap-1 z-10" onMouseLeave={() => setHoveredIndex(null)}>
-        {bars.map((height, i) => (
-          <div 
-            key={i}
-            className="w-full rounded-full transition-all duration-300 relative group"
-            onMouseEnter={() => setHoveredIndex(i)}
-            style={{ 
-              height: `${scanComplete ? height : 10}%`,
-              backgroundColor: isScanning 
-                ? (scanProgress > (i / bars.length) * 100 ? themeColor : '#333')
-                : getBarColor(i),
-              opacity: isScanning ? 1 : (getFlagForBar(i) ? 1 : 0.4), // Dim non-flagged areas
-              transform: hoveredIndex === i ? 'scaleY(1.2)' : 'scaleY(1)'
-            }}
-          />
-        ))}
+        {bars.map((height, i) => {
+           const flag = getFlagForBar(i);
+           return (
+            <div 
+              key={i}
+              className={`w-full rounded-full transition-all duration-300 relative group ${flag ? 'animate-pulse' : ''}`}
+              onMouseEnter={() => setHoveredIndex(i)}
+              style={{ 
+                height: `${scanComplete ? height : 10}%`,
+                backgroundColor: isScanning 
+                  ? (scanProgress > (i / bars.length) * 100 ? themeColor : '#333')
+                  : getBarColor(i),
+                opacity: isScanning ? 1 : (flag ? 1 : 0.4), // Dim non-flagged areas
+                transform: hoveredIndex === i ? 'scaleY(1.2)' : 'scaleY(1)'
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Progress Overlay (Scanning) */}

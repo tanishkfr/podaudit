@@ -27,4 +27,11 @@ export interface StudioState {
     waveformBars: number[];
     platform: Platform;
     showDownload: boolean;
+    smartSummary: string; // New AI Summary
+}
+
+export interface UserProfile {
+    name: string;
+    role: string;
+    // Removed institute
 }

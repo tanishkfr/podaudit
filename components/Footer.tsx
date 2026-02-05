@@ -50,7 +50,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
                 <Button 
                    variant="secondary" 
                    size="lg" 
-                   onClick={() => alert("Export Logic Placeholder")}
+                   onClick={() => alert("Simulating Export...")}
                    className="scale-125 border-4 border-[#1A1A1A] shadow-[0_0_30px_rgba(123,198,92,0.3)] hover:shadow-[0_0_50px_rgba(123,198,92,0.6)]"
                 >
                     Export & Publish
@@ -95,7 +95,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
                         <Check size={28} /> 
                         <span>You're on the list.</span>
                    </div>
-                   <span className="text-sm opacity-60 uppercase tracking-widest">Stay spicy! 🌶️</span>
+                   <span className="text-sm opacity-60 uppercase tracking-widest text-white/60">Stay spicy! 🌶️</span>
                </div>
            )}
         </div>
