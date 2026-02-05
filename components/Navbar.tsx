@@ -1,6 +1,5 @@
-import React from 'react';
-import { Mic } from 'lucide-react';
-import { Button } from './Button';
+import React, { useRef, useState, useEffect } from 'react';
+import { Mic, Zap } from 'lucide-react';
 
 interface NavbarProps {
   activePage: string;
@@ -8,9 +7,35 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!btnRef.current) return;
+      const rect = btnRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const distanceX = e.clientX - centerX;
+      const distanceY = e.clientY - centerY;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      if (distance < 100) { 
+        // Magnetic pull effect
+        setPosition({ x: distanceX * 0.4, y: distanceY * 0.4 });
+      } else {
+        setPosition({ x: 0, y: 0 });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="fixed top-6 left-0 right-0 flex justify-center z-50 px-6">
-      <nav className="bg-white/95 backdrop-blur-md rounded-full px-3 py-2 shadow-2xl flex items-center gap-2 max-w-5xl w-full justify-between ring-1 ring-black/5">
+    <div className="fixed top-6 left-0 right-0 flex justify-center z-50 px-6 pointer-events-none">
+      <nav className="bg-white/95 backdrop-blur-md rounded-full px-3 py-2 shadow-2xl flex items-center gap-2 max-w-5xl w-full justify-between ring-1 ring-black/5 pointer-events-auto">
         
         {/* Logo */}
         <div 
@@ -40,16 +65,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
           ))}
         </div>
 
-        {/* CTA */}
-        <Button 
-          size="md" 
-          variant="primary" 
-          className="hidden sm:flex"
-          icon={<span className="text-xl">⚡</span>}
+        {/* Magnetic CTA */}
+        <button
+          ref={btnRef}
           onClick={() => setPage('studio')}
+          style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+          className="hidden sm:flex items-center gap-2 bg-[#F0543C] text-white border-[3px] border-[#1A1A1A] px-8 py-3 rounded-full font-bold text-lg shadow-[4px_4px_0px_#1A1A1A] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A] active:translate-y-0 active:shadow-none transition-all duration-200 group"
         >
-          Audit Now
-        </Button>
+          <Zap className="fill-current group-hover:animate-pulse" size={20} />
+          AUDIT NOW
+        </button>
       </nav>
     </div>
   );

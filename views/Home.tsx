@@ -7,7 +7,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
     <div className="w-full">
       
       {/* 1. HERO: MANIFESTO */}
-      <section className="bg-[#F0543C] min-h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden pt-32 pb-20 rounded-b-[3rem]">
+      <section className="bg-[#F0543C] min-h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden pt-32 pb-32 rounded-b-[4rem]">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" 
              style={{ backgroundImage: 'radial-gradient(#fff 2px, transparent 2px)', backgroundSize: '40px 40px' }}>
         </div>
@@ -41,7 +41,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       </section>
 
       {/* 2. THE NUMBERS: STACKED CARDS LAYOUT */}
-      <section className="bg-[#F5F1E6] py-32 px-6 overflow-hidden">
+      <section className="bg-[#F5F1E6] py-40 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto relative h-[600px] md:h-[400px]">
            {/* Card 1 */}
            <div className="absolute top-0 left-0 md:left-0 w-full md:w-1/3 bg-[#1A1A1A] p-10 rounded-[3rem] shadow-2xl z-30 transform hover:-translate-y-4 transition-transform duration-500 text-white border-4 border-[#F5F1E6]">
@@ -73,7 +73,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       </section>
 
       {/* 3. TRUST: YOUR DATA IS GHOSTED */}
-      <section className="bg-[#1A1A1A] py-32 px-6 rounded-[3rem] mx-4 mb-24 shadow-2xl text-white relative overflow-hidden">
+      <section className="bg-[#1A1A1A] py-40 px-6 rounded-[3rem] mx-4 mb-24 shadow-2xl text-white relative overflow-hidden">
          <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#2D2D2D] to-transparent opacity-50"></div>
          
          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
@@ -109,7 +109,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       </section>
 
       {/* 4. JOURNEY MAP */}
-      <section className="py-20 px-6 bg-[#F5F1E6]">
+      <section className="py-40 px-6 bg-[#F5F1E6]">
         <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl font-black text-[#1A1A1A] mb-20 text-center uppercase tracking-tight">The Audit Flow</h2>
             

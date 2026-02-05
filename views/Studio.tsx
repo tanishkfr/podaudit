@@ -120,7 +120,7 @@ export const Studio: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen pt-32 pb-20 px-6 bg-[#F5F1E6] relative">
+    <div className="w-full min-h-screen pt-32 pb-32 px-6 bg-[#F5F1E6] relative">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Panel: Upload & Engine */}
