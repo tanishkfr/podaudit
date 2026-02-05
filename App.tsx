@@ -195,7 +195,7 @@ const SignIn = ({ onLogin }: { onLogin: (name: string) => void }) => {
                         <FingerprintBrandLogo className="w-full h-full drop-shadow-lg" />
                     </div>
                     <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter">VOUCH</h1>
-                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Integrity Engine v2.0</p>
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Integrity Engine v1.0.4</p>
                 </div>
 
                 <div className="space-y-4">
