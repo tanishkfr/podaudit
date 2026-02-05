@@ -3,7 +3,7 @@ import { Platform, Flag, StudioState } from '../types';
 import { Button } from '../components/Button';
 import { Waveform } from '../components/Waveform';
 import { FlagCard } from '../components/FlagCard';
-import { Upload, Sparkles, CheckCircle, Download, RefreshCw, Trash2, Settings, Loader2, Lightbulb, ListPlus, FileText, Video, Mic, Eye, Check } from 'lucide-react';
+import { Upload, CheckCircle, RefreshCw, Trash2, Settings, Loader2, ListPlus, Video, Mic, Eye, Check, AlertTriangle, Shield, Power, ToggleLeft, ToggleRight, LayoutTemplate, Type, QrCode } from 'lucide-react';
 
 interface StudioProps {
     studioState: StudioState;
@@ -15,11 +15,23 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
   const [flagToNuke, setFlagToNuke] = useState<string | null>(null);
   const [nukeProgress, setNukeProgress] = useState(0);
   
+  // Lockdown State (Emergency Override)
+  const [lockdownState, setLockdownState] = useState<'confirm' | 'processing' | 'done' | null>(null);
+  const [lockdownProgress, setLockdownProgress] = useState(0);
+
+  // Overlay Engine State
+  const [editingOverlayId, setEditingOverlayId] = useState<string | null>(null);
+
   // Export State
   const [exportingType, setExportingType] = useState<string | null>(null);
   const [exportSuccess, setExportSuccess] = useState<string | null>(null);
 
   const { file, status, progress, flags, waveformBars, platform, showDownload, smartSummary } = studioState;
+
+  // Derived Metrics for Strike Shield
+  const riskFlags = flags.filter(f => f.status !== 'resolved' && (f.severity === 'red' || f.severity === 'orange'));
+  const riskLevel = Math.min(riskFlags.length * 20, 100);
+  const isSafe = riskFlags.length === 0;
 
   const themeColors: Record<Platform, string> = {
     YouTube: '#FF0000',
@@ -32,20 +44,23 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
   };
 
   const generateRandomFlags = (mode: Platform) => {
-    const types = [
-        { severity: 'red', type: 'The Nuke Zone', reason: 'Hate speech detected.', transcript: "You know, some people say we should just [bleep] all of them." },
-        { severity: 'orange', type: 'Advertiser Risk', reason: 'Excessive conflict.', transcript: "It's a total scam. Don't buy their garbage products ever." },
-        { severity: 'yellow', type: 'Hot Take', reason: 'Subjective opinion.', transcript: "Honestly, that entire country is overrated and boring." },
-        { severity: 'blue', type: 'Citation Needed', reason: 'Unverified stat.', transcript: "Studies show 99% of doctors agree with me on this." }
+    // IMPACT HIERARCHY TERMINOLOGY - REFINED SPACING
+    const definitions = [
+        { severity: 'red', category: 'THE KILL-SWITCH', transcript: "You know, some people say we should just [bleep] all of them.", reason: 'Hate speech detected.' },
+        { severity: 'orange', category: 'THE AD-RISK', transcript: "It's a total scam. Don't buy their garbage products ever.", reason: 'Advertiser conflict risk.' },
+        { severity: 'yellow', category: 'THE SPICY TAKE', transcript: "Honestly, that entire country is overrated and boring.", reason: 'Subjective opinion / Hyperbole.' },
+        { severity: 'blue', category: 'THE RECEIPT', transcript: "Studies show 99% of doctors agree with me on this.", reason: 'Unverified statistical claim.' }
     ];
 
     const numFlags = mode === 'General' ? 6 : Math.floor(Math.random() * 4) + 2; 
     const newFlags: Flag[] = [];
 
     for (let i = 0; i < numFlags; i++) {
-        const randomType = types[Math.floor(Math.random() * types.length)];
-        let severity = randomType.severity;
-        if (mode === 'General' && Math.random() > 0.5) severity = 'orange';
+        const def = definitions[Math.floor(Math.random() * definitions.length)];
+        let severity = def.severity;
+        
+        // Randomize logic slightly for flavor
+        if (mode === 'General' && Math.random() > 0.7) severity = 'orange';
 
         const randomSec = Math.floor(Math.random() * 1600) + 100;
         const mins = Math.floor(randomSec / 60);
@@ -56,11 +71,12 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
             timestamp: `${mins}:${secs.toString().padStart(2, '0')}`,
             seconds: randomSec,
             severity: severity as any,
-            type: randomType.type,
-            transcript: randomType.transcript,
-            aiReason: randomType.reason,
-            suggestedFix: severity === 'red' ? 'Nuke Segment' : 'Review',
-            status: 'active'
+            type: def.category, // Category uses Impact Hierarchy labels
+            transcript: def.transcript,
+            aiReason: def.reason,
+            suggestedFix: severity === 'red' ? 'Nuke Segment' : 'Review & Overlay',
+            status: 'active',
+            publicInLedger: true
         });
     }
     return newFlags.sort((a, b) => a.seconds - b.seconds);
@@ -68,8 +84,8 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
 
   const generateSummary = (flags: Flag[]) => {
       const redCount = flags.filter(f => f.severity === 'red').length;
-      if (redCount > 1) return "Whoa there! High voltage detected. ⚡ Multiple liability threats found. Recommend immediate review before export.";
-      if (flags.length > 3) return "Spicy episode! 🌶️ Several unverified claims found. A few disclaimers will keep the advertisers happy.";
+      if (redCount > 1) return "Whoa there! High voltage detected. ⚡ Multiple Kill-Switch threats found. Recommend immediate review before export.";
+      if (flags.length > 3) return "Spicy episode! 🌶️ Several unverified claims found. A few Receipt overlays will keep the advertisers happy.";
       return "Safe vibe overall, but that medical claim at 12:04 is spicy. 🌶️";
   };
 
@@ -79,10 +95,11 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
         activeFile = new File(["foo"], "audio_file.mp3", { type: "audio/mpeg" });
     }
     
+    // Explicitly starting a NEW simulation overwrites existing state
     updateState({
         file: activeFile,
         waveformBars: Array.from({ length: 80 }, () => Math.floor(Math.random() * 60) + 20),
-        status: 'analyzing', // Start analyzing immediately
+        status: 'analyzing', 
         progress: 0,
         flags: [],
         showDownload: false,
@@ -104,13 +121,34 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
       }, 2000);
   };
 
+  const handleOverlaySelect = (style: 'minimal' | 'bold' | 'context') => {
+      if (!editingOverlayId) return;
+      const updatedFlags = flags.map(f => 
+          f.id === editingOverlayId ? { ...f, overlayStyle: style } as Flag : f
+      );
+      setStudioState(prev => ({ ...prev, flags: updatedFlags }));
+  };
+
+  const toggleLedgerVisibility = (id: string) => {
+      const updatedFlags = flags.map(f => 
+          f.id === id ? { ...f, publicInLedger: !f.publicInLedger } as Flag : f
+      );
+      setStudioState(prev => ({ ...prev, flags: updatedFlags }));
+  };
+
   const handleExport = (type: string) => {
       setExportingType(type);
       setTimeout(() => {
           setExportingType(null);
-          setExportSuccess(type);
+          setExportSuccess(type); // Triggers the toast
           setTimeout(() => setExportSuccess(null), 4000);
       }, 2000);
+  };
+
+  const onFlagClick = (flag: Flag) => {
+      if (flag.severity === 'blue' || flag.severity === 'yellow') {
+          setEditingOverlayId(flag.id);
+      }
   };
 
   useEffect(() => {
@@ -135,6 +173,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
     }
   }, [status, setStudioState]);
 
+  // Nuke Logic
   useEffect(() => {
     if (nukingState === 'processing') {
       setNukeProgress(0);
@@ -159,6 +198,34 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
     }
   }, [nukingState, flagToNuke, setStudioState]);
 
+  // Lockdown Logic (Emergency Override)
+  useEffect(() => {
+    if (lockdownState === 'processing') {
+      setLockdownProgress(0);
+      const interval = setInterval(() => {
+        setLockdownProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setLockdownState('done');
+            // Resolve all Red and Orange flags
+            setStudioState(current => ({
+                ...current,
+                flags: current.flags.map(f => 
+                    (f.severity === 'red' || f.severity === 'orange') 
+                    ? { ...f, status: 'resolved', suggestedFix: 'SILENCED (AUTO)' } as Flag 
+                    : f
+                ),
+                showDownload: true
+            }));
+            return 100;
+          }
+          return prev + 1.5; // Slightly faster than individual nuke
+        });
+      }, 25);
+      return () => clearInterval(interval);
+    }
+  }, [lockdownState, setStudioState]);
+
   const reset = () => {
     setStudioState({
         file: null,
@@ -171,7 +238,11 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
         smartSummary: ''
     });
     setNukingState(null);
+    setLockdownState(null);
+    setEditingOverlayId(null);
   };
+
+  const activeOverlayFlag = flags.find(f => f.id === editingOverlayId);
 
   return (
     <div className={`w-full min-h-screen pt-32 pb-32 px-6 bg-[#F5F1E6] relative animate-in fade-in zoom-in-95 duration-700 transition-colors duration-500`}>
@@ -261,51 +332,42 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                     flags={flags}
                     themeColor={themeColors[platform]}
                     bars={waveformBars}
+                    onFlagClick={onFlagClick}
                   />
-
-                  {/* SECTION A: Smart Summary */}
-                  <div className="bg-[#F5F1E6] rounded-2xl p-8 border-l-8 border-[#1A1A1A] animate-in slide-in-from-bottom-4 shadow-sm">
-                      <div className="flex items-center gap-3 mb-4">
-                          <div className="p-2 bg-[#F0543C] rounded-lg text-white">
-                            <Lightbulb size={24} />
-                          </div>
-                          <span className="font-black uppercase tracking-widest text-sm text-[#1A1A1A]/60">AI Smart Summary</span>
-                      </div>
-                      <p className="text-2xl font-bold text-[#1A1A1A] leading-tight">
-                          "{smartSummary}"
-                      </p>
-                  </div>
                   
-                  {/* SECTION B: Transcript Deep-Dive */}
-                  <div className="bg-white border-2 border-[#1A1A1A]/5 rounded-3xl p-8 animate-in slide-in-from-bottom-6 shadow-sm">
-                       <div className="flex items-center justify-between mb-6">
-                           <div className="flex items-center gap-2">
-                                <FileText className="text-[#1A1A1A]" />
-                                <h4 className="text-xl font-black text-[#1A1A1A]">Transcript Deep-Dive</h4>
-                           </div>
-                           <span className="text-xs font-bold uppercase tracking-widest bg-[#F5F1E6] px-3 py-1 rounded-full text-gray-500">Auto-Generated</span>
-                       </div>
-                       <div className="max-h-64 overflow-y-auto pr-4 space-y-6">
-                           {flags.length === 0 ? (
-                               <p className="text-gray-400 font-medium italic">No flagged content found. Clean transcript available for export.</p>
-                           ) : (
-                               flags.filter(f => f.status !== 'resolved').map((flag, i) => (
-                                   <div key={i} className="group">
-                                       <div className="flex items-center gap-3 mb-2">
-                                           <span className="font-mono text-xs font-bold text-gray-400">{flag.timestamp}</span>
-                                           <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                                               flag.severity === 'red' ? 'bg-red-100 text-red-600' :
-                                               flag.severity === 'orange' ? 'bg-orange-100 text-orange-600' :
-                                               flag.severity === 'yellow' ? 'bg-yellow-100 text-yellow-600' : 'bg-blue-100 text-blue-600'
-                                           }`}>{flag.type}</span>
-                                       </div>
-                                       <p className="text-lg font-medium text-gray-800 border-l-4 border-gray-100 pl-4 py-1 group-hover:border-[#1A1A1A] transition-colors">
-                                           "... {flag.transcript} ..."
-                                       </p>
-                                   </div>
-                               ))
-                           )}
-                       </div>
+                  {/* Transparency Ledger */}
+                  <div className="bg-[#1A1A1A] text-white rounded-3xl p-8 border-4 border-white shadow-lg animate-in slide-in-from-bottom-6">
+                      <div className="flex justify-between items-center mb-6">
+                        <h4 className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
+                            <ListPlus className="text-[#7BC65C]" /> Transparency Ledger
+                        </h4>
+                        <span className="text-xs font-bold bg-white/10 px-3 py-1 rounded-full">Public Log</span>
+                      </div>
+                      
+                      <div className="space-y-4">
+                          {flags.filter(f => f.status === 'resolved').length === 0 ? (
+                              <p className="text-white/30 font-bold italic text-center py-4">No resolved items yet. Fix or Nuke segments to populate.</p>
+                          ) : (
+                              flags.filter(f => f.status === 'resolved').map(flag => (
+                                  <div key={flag.id} className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                                      <div className="flex items-center gap-4">
+                                          <div className={`w-2 h-2 rounded-full ${flag.severity === 'red' ? 'bg-[#F0543C]' : 'bg-[#FACC15]'}`}></div>
+                                          <div>
+                                              <p className="font-bold text-sm text-white/90">{flag.type} <span className="text-white/40 mx-2">|</span> {flag.timestamp}</p>
+                                              <p className="text-xs text-white/50">Action: {flag.suggestedFix === 'Nuke Segment' ? 'Segment Scrubbed' : 'Correction Applied'}</p>
+                                          </div>
+                                      </div>
+                                      <button 
+                                        onClick={() => toggleLedgerVisibility(flag.id)}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all ${flag.publicInLedger ? 'bg-[#7BC65C] text-[#1A1A1A]' : 'bg-white/10 text-white/40'}`}
+                                      >
+                                          {flag.publicInLedger ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                                          {flag.publicInLedger ? 'Public' : 'Hidden'}
+                                      </button>
+                                  </div>
+                              ))
+                          )}
+                      </div>
                   </div>
 
                   {/* SECTION C: Export Presets */}
@@ -354,38 +416,141 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
           </div>
         </div>
 
-        {/* Right Panel: Flag Feed */}
-        <div className="lg:col-span-4 flex flex-col h-full">
-           <div className="bg-[#1A1A1A] text-white p-8 rounded-t-[2.5rem] flex items-center justify-between shadow-xl z-10 relative">
-             <h3 className="text-2xl font-black tracking-tight">Risk Feed</h3>
-             <span className="bg-white/20 px-4 py-1.5 rounded-full text-sm font-bold">{flags.filter(f => f.status !== 'resolved').length} Issues</span>
-           </div>
+        {/* Right Panel */}
+        <div className="lg:col-span-4 flex flex-col h-full gap-4">
            
-           <div className="flex-1 bg-white/60 backdrop-blur-sm rounded-b-[2.5rem] p-6 space-y-4 min-h-[400px] border border-white shadow-lg -mt-4 pt-10 overflow-y-auto max-h-[800px]">
-             {status === 'idle' && (
-               <div className="h-full flex flex-col items-center justify-center text-gray-400/30 font-bold text-xl italic space-y-4">
-                 <Settings size={40} />
-                 <p>Engine Idle</p>
+           {/* Header: Strike Shield */}
+           <div className={`rounded-[2.5rem] p-6 text-white shadow-xl transition-all duration-500 relative overflow-hidden ${isSafe ? 'bg-[#7BC65C]' : 'bg-[#1A1A1A]'}`}>
+               <div className="flex justify-between items-start relative z-10">
+                   <div>
+                       <h3 className="text-lg font-black uppercase tracking-widest opacity-80 mb-1">Strike Shield</h3>
+                       <p className="text-3xl font-black">{isSafe ? '100% SAFE' : `${Math.round(riskLevel)}% RISK`}</p>
+                   </div>
+                   <Shield size={32} className={isSafe ? 'text-white' : 'text-[#F0543C]'} />
                </div>
-             )}
+               
+               {/* Risk Meter */}
+               <div className="mt-4 w-full h-3 bg-black/20 rounded-full overflow-hidden">
+                   <div className="h-full bg-white transition-all duration-500" style={{ width: `${isSafe ? 100 : riskLevel}%` }}></div>
+               </div>
 
-             {flags.map((flag) => (
-               <FlagCard 
-                 key={flag.id} 
-                 flag={flag} 
-                 autoNukeEnabled={false}
-                 onNuke={() => { setFlagToNuke(flag.id); setNukingState('confirm'); }}
-                 onFix={() => handleAutoFix(flag.id)}
-               />
-             ))}
-             
-             {status === 'complete' && flags.every(f => f.status === 'resolved') && (
-                <div className="h-full flex flex-col items-center justify-center text-[#7BC65C] space-y-4 animate-in zoom-in">
-                    <CheckCircle size={64} />
-                    <h4 className="text-2xl font-black">All Clear!</h4>
-                </div>
-             )}
+               {/* Power Cut Button */}
+               {!isSafe && (
+                   <div className="mt-6 pt-6 border-t border-white/10">
+                       <button 
+                         onClick={() => setLockdownState('confirm')}
+                         className="w-full bg-[#F0543C] hover:bg-red-600 text-white font-black uppercase tracking-wide py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-95"
+                       >
+                           <Power size={18} /> Emergency Override
+                       </button>
+                   </div>
+               )}
            </div>
+
+           {/* Content Switcher: Overlay Engine or Risk Feed */}
+           {editingOverlayId && activeOverlayFlag ? (
+               <div className="flex-1 bg-white rounded-[2.5rem] p-6 shadow-2xl border-4 border-[#1A1A1A] animate-in slide-in-from-right-8 flex flex-col">
+                   <div className="flex justify-between items-center mb-6">
+                       <h3 className="text-2xl font-black text-[#1A1A1A] flex items-center gap-2">
+                           <LayoutTemplate size={24} /> Overlay Library
+                       </h3>
+                       <button onClick={() => setEditingOverlayId(null)} className="text-gray-400 hover:text-[#1A1A1A]">Close</button>
+                   </div>
+
+                   <p className="font-bold text-gray-500 mb-6">Select a style for "{activeOverlayFlag.type}"</p>
+
+                   <div className="space-y-4 mb-8">
+                       <button 
+                        onClick={() => handleOverlaySelect('minimal')}
+                        className={`w-full p-4 rounded-xl border-2 text-left transition-all ${activeOverlayFlag.overlayStyle === 'minimal' ? 'border-[#1A1A1A] bg-[#1A1A1A] text-white' : 'border-gray-100 hover:border-gray-300'}`}
+                       >
+                           <span className="font-black text-sm uppercase tracking-wider block mb-1">Style A: Minimalist</span>
+                           <span className="text-xs opacity-70">Clean pill-shaped disclosure.</span>
+                       </button>
+                       <button 
+                        onClick={() => handleOverlaySelect('bold')}
+                        className={`w-full p-4 rounded-xl border-2 text-left transition-all ${activeOverlayFlag.overlayStyle === 'bold' ? 'border-[#F0543C] bg-[#F0543C] text-white' : 'border-gray-100 hover:border-gray-300'}`}
+                       >
+                           <span className="font-black text-sm uppercase tracking-wider block mb-1">Style B: Bold</span>
+                           <span className="text-xs opacity-70">High-contrast correction box.</span>
+                       </button>
+                       <button 
+                        onClick={() => handleOverlaySelect('context')}
+                        className={`w-full p-4 rounded-xl border-2 text-left transition-all ${activeOverlayFlag.overlayStyle === 'context' ? 'border-[#00E8FF] bg-[#00E8FF] text-[#1A1A1A]' : 'border-gray-100 hover:border-gray-300'}`}
+                       >
+                           <span className="font-black text-sm uppercase tracking-wider block mb-1">Style C: Context Card</span>
+                           <span className="text-xs opacity-70">Detailed fact-check with QR.</span>
+                       </button>
+                   </div>
+
+                   {/* Live Preview Mock */}
+                   <div className="flex-1 bg-black rounded-2xl relative overflow-hidden group">
+                       <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black flex items-center justify-center text-white/20 font-black text-4xl">
+                           PREVIEW
+                       </div>
+                       
+                       {/* Overlays */}
+                       {activeOverlayFlag.overlayStyle === 'minimal' && (
+                           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-md px-6 py-2 rounded-full text-white text-xs font-bold border border-white/20 flex items-center gap-2 shadow-xl animate-in slide-in-from-bottom-4">
+                               <AlertTriangle size={12} className="text-[#FACC15]" />
+                               <span>Disclaimer: {activeOverlayFlag.aiReason}</span>
+                           </div>
+                       )}
+
+                       {activeOverlayFlag.overlayStyle === 'bold' && (
+                           <div className="absolute top-6 left-6 right-6 bg-[#F0543C] p-4 rounded-xl text-white shadow-xl animate-in slide-in-from-top-4 border-2 border-white">
+                               <div className="font-black uppercase tracking-widest text-xs mb-1 flex items-center gap-2">
+                                   <Type size={12} /> Correction
+                               </div>
+                               <p className="font-bold text-sm leading-tight">{activeOverlayFlag.suggestedFix}</p>
+                           </div>
+                       )}
+
+                       {activeOverlayFlag.overlayStyle === 'context' && (
+                           <div className="absolute bottom-6 right-6 bg-white text-[#1A1A1A] p-4 rounded-xl shadow-xl animate-in slide-in-from-right-4 w-48 border-4 border-[#00E8FF]">
+                               <div className="flex justify-between items-start mb-2">
+                                   <span className="font-black text-xs uppercase text-[#00E8FF]">Context</span>
+                                   <QrCode size={24} />
+                               </div>
+                               <p className="font-bold text-[10px] leading-tight mb-2 opacity-80">
+                                   Verified Source: <br/> Global Health Database
+                               </p>
+                           </div>
+                       )}
+                   </div>
+               </div>
+           ) : (
+               <div className="flex-1 bg-white/60 backdrop-blur-sm rounded-[2.5rem] p-6 space-y-4 min-h-[400px] border border-white shadow-lg overflow-y-auto max-h-[800px]">
+                 <div className="flex justify-between items-center mb-4 px-2">
+                    <h3 className="text-xl font-black text-[#1A1A1A]">Risk Feed</h3>
+                    <span className="bg-[#1A1A1A] text-white px-3 py-1 rounded-full text-xs font-bold">{flags.filter(f => f.status !== 'resolved').length} Active</span>
+                 </div>
+                 
+                 {status === 'idle' && (
+                   <div className="h-full flex flex-col items-center justify-center text-gray-400/30 font-bold text-xl italic space-y-4 mt-20">
+                     <Settings size={40} />
+                     <p>Engine Idle</p>
+                   </div>
+                 )}
+
+                 {flags.map((flag) => (
+                   <FlagCard 
+                     key={flag.id} 
+                     flag={flag} 
+                     autoNukeEnabled={false}
+                     onNuke={() => { setFlagToNuke(flag.id); setNukingState('confirm'); }}
+                     onFix={() => handleAutoFix(flag.id)}
+                   />
+                 ))}
+                 
+                 {status === 'complete' && flags.every(f => f.status === 'resolved') && (
+                    <div className="h-full flex flex-col items-center justify-center text-[#7BC65C] space-y-4 animate-in zoom-in mt-20">
+                        <CheckCircle size={64} />
+                        <h4 className="text-2xl font-black">All Clear!</h4>
+                    </div>
+                 )}
+               </div>
+           )}
         </div>
       </div>
 
@@ -437,6 +602,53 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                         </div>
                         <h3 className="text-4xl font-black">Done.</h3>
                         <Button variant="primary" className="w-full" onClick={() => setNukingState(null)}>Return</Button>
+                    </div>
+                )}
+
+             </div>
+          </div>
+      )}
+
+      {/* LOCKDOWN MODAL (Emergency Override) */}
+      {lockdownState && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1A1A1A]/95 backdrop-blur-lg px-6 animate-in fade-in duration-300">
+             <div className="bg-[#F0543C] rounded-[3rem] p-12 max-w-lg w-full shadow-2xl relative text-white border-4 border-white">
+                
+                {lockdownState === 'confirm' && (
+                    <div className="text-center space-y-8 animate-in zoom-in-95">
+                        <div className="w-32 h-32 bg-white text-[#F0543C] rounded-full mx-auto flex items-center justify-center mb-6 shadow-xl animate-pulse">
+                            <AlertTriangle size={64} />
+                        </div>
+                        <h3 className="text-5xl font-black uppercase leading-none">Emergency<br/>Override</h3>
+                        <p className="text-white/80 text-xl font-bold">This will silence ALL high-risk segments immediately. Irreversible.</p>
+                        <div className="flex gap-4 pt-4">
+                            <Button variant="neutral" className="flex-1" onClick={() => setLockdownState(null)}>Cancel</Button>
+                            <Button variant="primary" className="flex-1 bg-[#1A1A1A] text-white border-white" onClick={() => setLockdownState('processing')}>EXECUTE</Button>
+                        </div>
+                    </div>
+                )}
+
+                {lockdownState === 'processing' && (
+                    <div className="text-center space-y-8 animate-in zoom-in-95">
+                         <h3 className="text-4xl font-black uppercase">Overriding...</h3>
+                         <div className="w-full h-12 bg-black/20 rounded-full overflow-hidden border-4 border-white">
+                            <div 
+                                className="h-full bg-white transition-all duration-75 ease-linear"
+                                style={{ width: `${lockdownProgress}%` }}
+                            ></div>
+                         </div>
+                         <p className="font-mono text-sm uppercase">Silencing audio tracks...</p>
+                    </div>
+                )}
+
+                {lockdownState === 'done' && (
+                     <div className="text-center space-y-6 animate-in zoom-in-95">
+                        <div className="w-24 h-24 bg-white text-[#F0543C] rounded-full mx-auto flex items-center justify-center mb-4 shadow-xl">
+                            <CheckCircle size={48} />
+                        </div>
+                        <h3 className="text-4xl font-black">Secure.</h3>
+                        <p className="font-bold">All liabilities neutralized.</p>
+                        <Button variant="neutral" className="w-full" onClick={() => setLockdownState(null)}>Return to Studio</Button>
                     </div>
                 )}
 

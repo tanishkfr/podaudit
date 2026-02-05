@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flag } from '../types';
 
 interface WaveformProps {
@@ -6,10 +6,11 @@ interface WaveformProps {
   scanComplete: boolean;
   flags: Flag[];
   themeColor: string; 
-  bars: number[]; // Received from parent to ensure persistence
+  bars: number[]; 
+  onFlagClick?: (flag: Flag) => void;
 }
 
-export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, flags, themeColor, bars }) => {
+export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, flags, themeColor, bars, onFlagClick }) => {
   const [scanProgress, setScanProgress] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -40,10 +41,8 @@ export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, fl
     
     // Find flag within +/- 1.5% of this bar's position
     return flags.find(f => {
-        // IGNORE RESOLVED FLAGS
         if (f.status === 'resolved') return false;
-
-        const flagPerc = (f.seconds / 1800) * 100; // Assuming 30min (1800s) duration
+        const flagPerc = (f.seconds / 1800) * 100; 
         return percentage >= flagPerc - 1.5 && percentage <= flagPerc + 1.5;
     });
   };
@@ -59,29 +58,32 @@ export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, fl
               default: return themeColor;
           }
       }
-      return '#2D2D2D'; // Neutral base color
+      return '#2D2D2D'; 
   };
 
   const hoveredFlag = hoveredIndex !== null ? getFlagForBar(hoveredIndex) : null;
 
   return (
-    <div className="relative w-full h-80 bg-[#1A1A1A] rounded-[2rem] overflow-visible ring-4 ring-black/5 shadow-2xl p-8 flex items-center">
+    <div className="relative w-full h-80 bg-[#1A1A1A] rounded-[2rem] overflow-visible ring-4 ring-black/5 shadow-2xl p-8 flex items-center group/waveform">
       
       {/* Bars Container */}
       <div className="w-full h-full flex items-center justify-between gap-1 z-10" onMouseLeave={() => setHoveredIndex(null)}>
         {bars.map((height, i) => {
            const flag = getFlagForBar(i);
+           const isInteractive = flag && (flag.severity === 'blue' || flag.severity === 'yellow');
+           
            return (
             <div 
               key={i}
-              className={`w-full rounded-full transition-all duration-300 relative group ${flag ? 'animate-pulse' : ''}`}
+              onClick={() => flag && onFlagClick && onFlagClick(flag)}
+              className={`w-full rounded-full transition-all duration-300 relative ${flag ? 'animate-pulse cursor-pointer' : ''}`}
               onMouseEnter={() => setHoveredIndex(i)}
               style={{ 
                 height: `${scanComplete ? height : 10}%`,
                 backgroundColor: isScanning 
                   ? (scanProgress > (i / bars.length) * 100 ? themeColor : '#333')
                   : getBarColor(i),
-                opacity: isScanning ? 1 : (flag ? 1 : 0.4), // Dim non-flagged areas
+                opacity: isScanning ? 1 : (flag ? 1 : 0.4), 
                 transform: hoveredIndex === i ? 'scaleY(1.2)' : 'scaleY(1)'
               }}
             />
@@ -110,6 +112,11 @@ export const Waveform: React.FC<WaveformProps> = ({ isScanning, scanComplete, fl
             <div className="text-xs font-bold text-gray-500 mt-1 max-w-xs whitespace-normal">
                 {hoveredFlag.aiReason}
             </div>
+            {(hoveredFlag.severity === 'blue' || hoveredFlag.severity === 'yellow') && (
+                <div className="mt-2 text-[10px] font-black uppercase text-[#1A1A1A] bg-gray-100 rounded px-2 py-1 text-center">
+                    Click to Overlay
+                </div>
+            )}
         </div>
       )}
     </div>

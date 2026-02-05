@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Zap, Users, Lock, Database, FileSearch, ArrowDown, BrainCircuit, RefreshCcw, SearchCheck } from 'lucide-react';
+import { ShieldCheck, Zap, Users, Lock, Database, FileSearch, ArrowDown, BrainCircuit, RefreshCcw, SearchCheck, HeartHandshake } from 'lucide-react';
 import { Button } from '../components/Button';
 
 // Simplified Lock Graphic
@@ -59,7 +59,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
         </div>
       </section>
 
-      {/* 2. THE 3-LAYER SCRUTINY: New Section */}
+      {/* 2. THE 3-LAYER SCRUTINY: Cream Block */}
       <section className="bg-white py-32 px-6 w-full border-b-2 border-black/5">
         <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20 animate-in slide-in-from-bottom-10 fade-in duration-700">
@@ -130,7 +130,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
       </section>
 
       {/* 4. STEP-BY-STEP: Vertical Scroll Reveal */}
-      <section className="py-32 px-6 bg-[#F5F1E6] w-full">
+      <section className="py-32 px-6 bg-[#F5F1E6] w-full border-b-2 border-black/5">
         <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-black text-[#1A1A1A] mb-20 text-center uppercase tracking-tight animate-in slide-in-from-bottom-8">The Workflow</h2>
             
@@ -159,6 +159,29 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
             </div>
         </div>
       </section>
+
+      {/* 5. THE POWER OF TRANSPARENCY: Full Width Blue Block */}
+      <section className="bg-[#00E8FF] py-32 px-6 w-full text-[#1A1A1A] relative overflow-hidden">
+         <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+         <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/20 rounded-full blur-3xl -ml-32 -mb-32"></div>
+
+         <div className="max-w-5xl mx-auto text-center relative z-10">
+             <div className="w-24 h-24 bg-[#1A1A1A] text-white rounded-full flex items-center justify-center mx-auto mb-10 shadow-[8px_8px_0px_white]">
+                 <HeartHandshake size={48} />
+             </div>
+             <h2 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-none">
+                 HONESTY IS THE <br/> NEW <span className="text-white drop-shadow-md">VIRALITY.</span>
+             </h2>
+             <p className="text-2xl md:text-3xl font-bold max-w-3xl mx-auto leading-tight mb-12">
+                 Audiences don't want perfection. They want ownership. Being transparent about corrections builds a 3x stronger connection than pretending to be flawless.
+             </p>
+             <div className="inline-flex items-center gap-4 bg-white px-8 py-4 rounded-full border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A]">
+                 <span className="font-black uppercase tracking-widest text-lg">Integrity First</span>
+                 <ShieldCheck className="text-[#F0543C]" size={28} />
+             </div>
+         </div>
+      </section>
+
     </div>
   );
 };

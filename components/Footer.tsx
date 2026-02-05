@@ -102,17 +102,17 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
 
         {/* Bottom Bar */}
         <div className="w-full flex flex-col md:flex-row justify-between items-center gap-8 border-t-2 border-white/10 pt-12 relative">
-          <div className="flex gap-8 text-sm font-black uppercase tracking-widest text-gray-400">
+          <div className="flex gap-8 text-sm font-black uppercase tracking-widest text-gray-400 order-2 md:order-1">
             <a href="#" onClick={(e) => handleLinkClick(e, "Privacy")} className="hover:text-white transition-colors">Privacy</a>
             <a href="#" onClick={(e) => handleLinkClick(e, "Terms")} className="hover:text-white transition-colors">Terms</a>
             <a href="#" onClick={(e) => handleLinkClick(e, "Security")} className="hover:text-white transition-colors">Security</a>
           </div>
           
-          <div className="text-xs font-black uppercase tracking-widest text-gray-600 md:absolute md:left-1/2 md:transform md:-translate-x-1/2 w-full text-center">
+          <div className="text-xs font-black uppercase tracking-widest text-gray-600 w-full text-center order-1 md:order-2 md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
             © 2026 AUDIT-POP INC.
           </div>
 
-          <div className="flex gap-6 text-white">
+          <div className="flex gap-6 text-white order-3">
             <Twitter size={24} className="hover:text-[#F0543C] cursor-pointer transition-colors hover:-translate-y-1 duration-300" onClick={() => alert("Social Link: Twitter")} />
             <Instagram size={24} className="hover:text-[#F0543C] cursor-pointer transition-colors hover:-translate-y-1 duration-300" onClick={() => alert("Social Link: Instagram")} />
             <Linkedin size={24} className="hover:text-[#F0543C] cursor-pointer transition-colors hover:-translate-y-1 duration-300" onClick={() => alert("Social Link: LinkedIn")} />

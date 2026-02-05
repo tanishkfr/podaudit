@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Youtube, Music, CheckCircle, ShieldCheck, Activity, Award, Edit2, Save, ExternalLink, ChevronDown, Radio, Wifi } from 'lucide-react';
+import { Youtube, Music, CheckCircle, ShieldCheck, Activity, Award, Edit2, Save, Wifi } from 'lucide-react';
 import { Waveform } from '../components/Waveform';
 import { UserProfile } from '../types';
 import { Button } from '../components/Button';
@@ -22,7 +22,7 @@ export const Profile: React.FC<ProfileProps> = ({ setPage, user, setUser }) => {
             timestamp: '12:04',
             seconds: 600,
             severity: 'yellow' as any,
-            type: 'Hot Take',
+            type: 'THE SPICY TAKE',
             transcript: '...',
             aiReason: 'Subjective Opinion',
             suggestedFix: 'Disclaimer'
@@ -86,7 +86,7 @@ export const Profile: React.FC<ProfileProps> = ({ setPage, user, setUser }) => {
                                 ) : (
                                     <>
                                         <h2 className="text-3xl font-black text-[#1A1A1A] leading-none mb-1">{user.name}</h2>
-                                        <p className="text-[#F0543C] font-bold uppercase tracking-widest text-xs mt-2">{user.role}</p>
+                                        <p className="text-[#F0543C] font-bold uppercase tracking-widest text-xs mt-2">HCD / UI UX DESIGN STUDENT</p>
                                     </>
                                 )}
                             </div>

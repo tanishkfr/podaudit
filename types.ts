@@ -12,6 +12,8 @@ export interface Flag {
   aiReason: string;
   suggestedFix: string;
   status?: 'active' | 'processing' | 'resolved'; // Added for state management
+  overlayStyle?: 'minimal' | 'bold' | 'context' | null; // New: For Overlay Engine
+  publicInLedger?: boolean; // New: For Transparency Ledger
 }
 
 export interface WaveformBar {
@@ -27,11 +29,10 @@ export interface StudioState {
     waveformBars: number[];
     platform: Platform;
     showDownload: boolean;
-    smartSummary: string; // New AI Summary
+    smartSummary: string; 
 }
 
 export interface UserProfile {
     name: string;
     role: string;
-    // Removed institute
 }

@@ -24,9 +24,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
             <span className="text-2xl font-extrabold tracking-tight text-[#1A1A1A] hidden sm:block">AUDIT-POP</span>
           </div>
 
-          {/* Center Links */}
+          {/* Center Links - Now includes Contact */}
           <div className="flex items-center bg-[#F5F1E6]/50 rounded-full p-1.5 gap-1">
-            {['home', 'spectrum', 'studio'].map((page) => (
+            {['home', 'spectrum', 'studio', 'contact'].map((page) => (
               <button 
                 key={page}
                 onClick={() => setPage(page as any)}
