@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, AlertTriangle, ShieldAlert, Info, ArrowRight } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ShieldAlert, Info, ArrowRight, Search } from 'lucide-react';
 
 const SpectrumSection: React.FC<{ 
     color: string; 
@@ -11,9 +11,9 @@ const SpectrumSection: React.FC<{
     bullets: string[];
     exampleBefore: string;
     exampleAfter: string;
-    riskLevel: number; // 1-10
+    riskLevel: number; 
 }> = ({ color, bg, textColor, icon, title, desc, bullets, exampleBefore, exampleAfter, riskLevel }) => (
-    <div className={`w-full py-24 px-6 border-b-8 border-[#1A1A1A]/5 ${bg} ${textColor}`}>
+    <div className={`w-full py-24 px-6 mb-6 ${bg} ${textColor}`}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
             {/* Left Info */}
@@ -73,16 +73,59 @@ const SpectrumSection: React.FC<{
     </div>
 );
 
+// Custom "Corporate Memphis" style SVG Illustration
+const InvestigatorIllustration = () => (
+    <svg viewBox="0 0 400 400" className="w-full h-full max-h-[600px] animate-in fade-in slide-in-from-bottom-10 duration-1000">
+        {/* Background Blob */}
+        <path d="M50 200 C 50 100, 350 100, 350 200 C 350 300, 50 300, 50 200" fill="#FFFFFF" fillOpacity="0.4" />
+        
+        {/* Body */}
+        <path d="M150 350 L 250 350 L 230 180 L 170 180 Z" fill="#2D2D2D" />
+        
+        {/* Head */}
+        <circle cx="200" cy="140" r="50" fill="#F0543C" />
+        
+        {/* Arms holding Magnifying Glass */}
+        <path d="M170 200 Q 120 250 140 280" stroke="#2D2D2D" strokeWidth="20" strokeLinecap="round" fill="none" />
+        <path d="M230 200 Q 280 250 260 280" stroke="#2D2D2D" strokeWidth="20" strokeLinecap="round" fill="none" />
+        
+        {/* Magnifying Glass */}
+        <g transform="translate(180, 220) rotate(-30)">
+            <circle cx="50" cy="50" r="60" stroke="#1A1A1A" strokeWidth="12" fill="rgba(255,255,255,0.3)" />
+            <path d="M50 110 L 50 180" stroke="#1A1A1A" strokeWidth="12" strokeLinecap="round" />
+            <circle cx="50" cy="50" r="40" fill="#00E8FF" fillOpacity="0.3" />
+            {/* Reflection */}
+            <path d="M30 30 Q 50 10 70 30" stroke="white" strokeWidth="6" fill="none" opacity="0.8" />
+        </g>
+        
+        {/* Floating Abstract Elements */}
+        <circle cx="320" cy="80" r="20" fill="#FACC15" className="animate-bounce" style={{ animationDuration: '3s' }} />
+        <rect x="50" y="100" width="30" height="30" fill="#2D2D2D" transform="rotate(15)" className="animate-pulse" />
+        <path d="M350 300 L 370 330 L 330 330 Z" fill="#F0543C" />
+    </svg>
+);
+
 export const Spectrum: React.FC = () => {
     return (
-        <div className="w-full pt-20 bg-[#F5F1E6]">
-             <div className="py-32 px-6 text-center">
-                <h1 className="text-[12vw] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter mb-8">
-                    THE LOGIC.
-                </h1>
-                <p className="text-2xl font-bold text-gray-500 max-w-2xl mx-auto">
-                    A deep dive into our 4-tier classification system.
-                </p>
+        <div className="w-full pt-32 pb-0 bg-[#F5F1E6]">
+             {/* Neutral Hero Section (Soft Cream) */}
+             <div className="w-full bg-[#F5F1E6] min-h-[80vh] flex flex-col items-center justify-center text-center p-8 relative overflow-hidden border-b-2 border-black/5">
+                <div className="max-w-7xl mx-auto z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="text-left space-y-8">
+                        <div className="inline-block bg-[#1A1A1A] text-white px-6 py-2 rounded-full font-black uppercase tracking-widest text-sm transform -rotate-2">
+                            The Methodology
+                        </div>
+                        <h1 className="text-8xl md:text-[9rem] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter">
+                            THE <br/> SPECTRUM.
+                        </h1>
+                        <p className="text-3xl font-bold text-[#1A1A1A]/70 leading-tight max-w-lg">
+                            We don't just ban. We categorize risk so you can keep the spice without the strike.
+                        </p>
+                    </div>
+                    <div className="h-[500px] flex items-center justify-center">
+                        <InvestigatorIllustration />
+                    </div>
+                </div>
             </div>
 
             <SpectrumSection 

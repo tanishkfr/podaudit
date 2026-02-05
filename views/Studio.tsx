@@ -150,14 +150,14 @@ export const Studio: React.FC = () => {
           </div>
 
           {/* Main Engine Area */}
-          <div className="bg-white rounded-[3rem] p-10 shadow-2xl min-h-[600px] flex flex-col relative overflow-hidden transition-all duration-500 border-4 border-white">
+          <div className="bg-white rounded-[2.5rem] p-10 shadow-2xl min-h-[600px] flex flex-col relative overflow-hidden transition-all duration-500 border-4 border-white">
             
             <div className="flex-1 flex flex-col justify-center">
               
               {/* STATE 1: IDLE */}
               {status === 'idle' && (
                 <div 
-                  className="flex-1 border-4 border-dashed border-[#E5E0D6] rounded-[2.5rem] flex flex-col items-center justify-center text-center p-12 hover:border-[#1A1A1A] hover:bg-gray-50 transition-all cursor-pointer group gap-6"
+                  className="flex-1 border-4 border-dashed border-[#E5E0D6] rounded-[2rem] flex flex-col items-center justify-center text-center p-12 hover:border-[#1A1A1A] hover:bg-gray-50 transition-all cursor-pointer group gap-6"
                   onClick={() => !file && document.getElementById('file-upload')?.click()}
                 >
                   <input id="file-upload" type="file" className="hidden" onChange={(e) => {
