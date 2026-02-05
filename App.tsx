@@ -11,7 +11,7 @@ import { StudioState, UserProfile } from './types';
 function App() {
   const [activePage, setActivePageState] = useState<'home' | 'spectrum' | 'studio' | 'contact' | 'profile'>('home');
 
-  // Global User State
+  // Global User State - Lifted for Live Sync
   const [user, setUser] = useState<UserProfile>({
     name: 'Tanishk',
     role: 'HCD / UI UX Design',
@@ -24,7 +24,7 @@ function App() {
     progress: 0,
     flags: [],
     waveformBars: [],
-    platform: 'General',
+    platform: 'YouTube', // Default to YouTube
     showDownload: false,
     smartSummary: ''
   });
@@ -47,7 +47,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#F5F1E6] flex flex-col font-[Plus Jakarta Sans] overflow-x-hidden selection:bg-[#F0543C] selection:text-white">
-      <Navbar activePage={activePage} setPage={setActivePage} />
+      {/* Pass user state to Navbar for Live Sync */}
+      <Navbar activePage={activePage} setPage={setActivePage} user={user} />
       
       <main className="flex-grow">
         {renderPage()}

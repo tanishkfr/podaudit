@@ -1,12 +1,14 @@
 import React from 'react';
 import { Mic, Zap, User } from 'lucide-react';
+import { UserProfile } from '../types';
 
 interface NavbarProps {
   activePage: string;
   setPage: (page: 'home' | 'spectrum' | 'studio' | 'contact' | 'profile') => void;
+  user: UserProfile; // Received for Live Sync
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage, user }) => {
   return (
     <>
       {/* Centered Main Navigation */}
@@ -52,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
         </nav>
       </div>
 
-      {/* Detached Profile Button (Top Right) */}
+      {/* Detached Profile Button (Top Right) - NOW DYNAMIC */}
       <div className="fixed top-6 right-6 z-50">
         <button
           onClick={() => setPage('profile')}
@@ -71,7 +73,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage }) => {
            `}>
               <User size={20} />
            </div>
-           <span className="text-sm tracking-wide hidden md:inline-block">Profile</span>
+           {/* Dynamic User Name from Prop */}
+           <span className="text-sm tracking-wide hidden md:inline-block truncate max-w-[100px]">{user.name}</span>
         </button>
       </div>
     </>
