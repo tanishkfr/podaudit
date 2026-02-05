@@ -50,7 +50,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                 </div>
            </div>
 
-           <h1 className="text-[14vw] md:text-[10rem] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter drop-shadow-sm mix-blend-multiply animate-in slide-in-from-bottom-10 fade-in duration-1000 delay-200">
+           <h1 className="text-[clamp(4rem,14vw,12rem)] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter drop-shadow-sm mix-blend-multiply animate-in slide-in-from-bottom-10 fade-in duration-1000 delay-200">
              VOUCH <br/>
              <span className="text-white relative drop-shadow-xl">
                FOR IT.

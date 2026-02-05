@@ -8,7 +8,7 @@ import { Contact } from './views/Contact';
 import { Profile } from './views/Profile';
 import { Modal } from './components/Modal';
 import { StudioState, UserProfile, ModalConfig } from './types';
-import { ArrowRight, ShieldCheck, Zap, Activity, Fingerprint, Loader2 } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Zap, Activity, Fingerprint, Loader2, X } from 'lucide-react';
 
 // --- ASSET: GOOGLE LOGO ---
 const GoogleIcon = () => (
@@ -201,8 +201,8 @@ const FocusCursor = () => {
   );
 };
 
-// --- COMPONENT: SIGN-IN GATEWAY ---
-const SignIn = ({ onLogin }: { onLogin: (name: string) => void }) => {
+// --- COMPONENT: SIGN-IN GATEWAY (OVERLAY) ---
+const SignIn = ({ onLogin, onCancel }: { onLogin: (name: string) => void, onCancel: () => void }) => {
   const [nameInput, setNameInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -216,19 +216,31 @@ const SignIn = ({ onLogin }: { onLogin: (name: string) => void }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F1E6] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        {/* Soft Background Blur */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#E86D44]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="fixed inset-0 z-[100] bg-[#F5F1E6]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 animate-in fade-in duration-300">
         
-        <div className="relative z-10 w-full max-w-md animate-in slide-in-from-bottom-8 fade-in duration-700">
-            <div className="bg-white rounded-[2.5rem] shadow-[16px_16px_0px_rgba(26,26,26,0.05)] border-4 border-white p-8 md:p-10 text-center">
+        {/* Cancel Button */}
+        <button 
+            onClick={onCancel}
+            className="absolute top-8 right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-all shadow-md z-50"
+            data-cursor="hover"
+        >
+            <X size={24} />
+        </button>
+
+        <div className="relative z-10 w-full max-w-md animate-in slide-in-from-bottom-8 fade-in duration-500">
+            <div className="bg-white rounded-[2.5rem] shadow-[16px_16px_0px_rgba(26,26,26,0.05)] border-4 border-white p-8 md:p-10 text-center relative">
                 
+                {/* Security Badge */}
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#F0543C] text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest border-4 border-[#F5F1E6]">
+                    Restricted Area
+                </div>
+
                 <div className="flex flex-col items-center mb-10">
                     <div className="w-24 h-24 mb-6 hover:scale-105 transition-transform duration-300">
                         <FingerprintBrandLogo className="w-full h-full drop-shadow-lg" />
                     </div>
-                    <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter">VOUCH</h1>
-                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Integrity Engine v1.0.4</p>
+                    <h1 className="text-4xl font-black text-[#1A1A1A] tracking-tighter">AUTHENTICATE</h1>
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Access Studio & Profile</p>
                 </div>
 
                 <div className="space-y-4">
@@ -371,7 +383,12 @@ function App() {
   // --- GLOBAL STATE STORE ---
   const [showSplash, setShowSplash] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Pending page for redirect after login
+  const [pendingRedirect, setPendingRedirect] = useState<'studio' | 'profile' | null>(null);
+
   const [activePage, setActivePageState] = useState<'home' | 'spectrum' | 'studio' | 'contact' | 'profile'>('home');
   
   // Modal Global State
@@ -405,13 +422,36 @@ function App() {
   const handleLogin = (name: string) => {
       setUser(prev => ({ ...prev, name: name }));
       setIsAuthenticated(true);
+      setShowAuthModal(false);
+      
+      // Post-Login Redirect Logic
+      if (pendingRedirect) {
+          setActivePageState(pendingRedirect);
+          setPendingRedirect(null);
+      } else {
+          setActivePageState('studio'); // Default post-login land
+      }
+
       setShowOnboarding(true);
       window.scrollTo({ top: 0, behavior: "instant" });
   };
 
-  // --- NAVIGATION HANDLER (Instant) ---
+  const handleCancelAuth = () => {
+      setShowAuthModal(false);
+      setPendingRedirect(null);
+  };
+
+  // --- NAVIGATION HANDLER (Instant + Guarded) ---
   const handlePageChange = (newPage: 'home' | 'spectrum' | 'studio' | 'contact' | 'profile') => {
       if (activePage === newPage) return;
+
+      // PROTECTED ROUTE CHECK
+      if ((newPage === 'studio' || newPage === 'profile') && !isAuthenticated) {
+          setPendingRedirect(newPage as 'studio' | 'profile');
+          setShowAuthModal(true);
+          return;
+      }
+
       setActivePageState(newPage);
       window.scrollTo({ top: 0, behavior: "instant" });
   };
@@ -442,11 +482,12 @@ function App() {
       
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       
-      {!showSplash && !isAuthenticated && (
-          <SignIn onLogin={handleLogin} />
+      {/* AUTH OVERLAY (Conditionally Rendered on top of public content) */}
+      {!showSplash && showAuthModal && !isAuthenticated && (
+          <SignIn onLogin={handleLogin} onCancel={handleCancelAuth} />
       )}
 
-      {!showSplash && isAuthenticated && (
+      {!showSplash && (
         <>
             {showOnboarding && <OnboardingTour user={user} onClose={() => setShowOnboarding(false)} />}
             
@@ -459,7 +500,7 @@ function App() {
                 {modalConfig.content}
             </Modal>
 
-            <div className={`transition-opacity duration-300 ${showOnboarding || modalConfig.isOpen ? 'blur-sm' : ''}`}>
+            <div className={`transition-opacity duration-300 ${showOnboarding || modalConfig.isOpen || showAuthModal ? 'blur-sm' : ''}`}>
                 <Navbar activePage={activePage} setPage={handlePageChange} user={user} isAuthenticated={isAuthenticated} />
                 <main className="flex-grow">
                     {renderPage()}
