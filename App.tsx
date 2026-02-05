@@ -7,44 +7,92 @@ import { Studio } from './views/Studio';
 import { Contact } from './views/Contact';
 import { Profile } from './views/Profile';
 import { StudioState, UserProfile } from './types';
-import { ArrowRight, ShieldCheck, Zap, Activity, Apple, Mail, Fingerprint } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Zap, Activity, Fingerprint, Loader2 } from 'lucide-react';
 
-// --- COMPONENT: CINEMATIC SPLASH ---
+// --- COMPONENT: NEURAL SCAN SPLASH ---
 const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
-  const [fillState, setFillState] = useState(false);
-  const [exiting, setExiting] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+  const [statusText, setStatusText] = useState("ESTABLISHING INTEGRITY PATHWAY...");
 
   useEffect(() => {
-    const fillTimer = setTimeout(() => setFillState(true), 100);
-    const exitTimer = setTimeout(() => {
-      setExiting(true);
-      setTimeout(onComplete, 800);
-    }, 2500);
-    return () => { clearTimeout(fillTimer); clearTimeout(exitTimer); };
+    const duration = 2500; // 2.5 seconds scan
+    const start = performance.now();
+
+    const frame = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      setScanProgress(progress * 100);
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        setStatusText("ESTABLISHING INTEGRITY PATHWAY... [SUCCESS]");
+        // Hold for a moment then slide up
+        setTimeout(() => {
+          setIsExiting(true);
+          setTimeout(onComplete, 800); // Wait for transition to finish
+        }, 600);
+      }
+    };
+
+    requestAnimationFrame(frame);
   }, [onComplete]);
 
   return (
-    <div className={`fixed inset-0 z-[100] bg-[#1A1A1A] flex flex-col items-center justify-center transition-opacity duration-700 ease-out ${exiting ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-      <div className="relative text-center w-full overflow-hidden flex flex-col items-center">
-        <h1 
-          className="text-[15vw] md:text-[12rem] font-black tracking-tighter leading-none transition-all duration-300"
-          style={{ 
-            color: 'rgba(255,255,255,0.05)',
-            WebkitTextStroke: '2px #E86D44',
-            backgroundImage: 'linear-gradient(to top, #E86D44 50%, transparent 50%)',
-            backgroundSize: '100% 200%',
-            backgroundPosition: fillState ? '0% 100%' : '0% 0%',
-            WebkitBackgroundClip: 'text',
-            transition: 'background-position 2s cubic-bezier(0.22, 1, 0.36, 1)'
-          }}
-        >
-          VOUCH
-        </h1>
-        <div className={`mt-12 transition-opacity duration-1000 delay-500 ${fillState ? 'opacity-100' : 'opacity-0'}`}>
-             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#E86D44] animate-pulse">
-                Establishing Creator Integrity — 2026
-             </p>
+    <div 
+      className={`fixed inset-0 z-[100] bg-[#1A1A1A] flex flex-col items-center justify-center overflow-hidden transition-transform duration-[800ms] cubic-bezier(0.7, 0, 0.3, 1) ${isExiting ? '-translate-y-full' : 'translate-y-0'}`}
+    >
+      {/* Container for Logo */}
+      <div className="relative w-full max-w-7xl h-[400px] flex items-center justify-center">
+        
+        {/* Layer 1: Glitchy Wireframe (Underneath) */}
+        {/* This layer is always visible but obscured by the scan line reveal */}
+        <div className="absolute inset-0 flex items-center justify-center select-none opacity-40">
+           <h1 
+             className="text-[15vw] md:text-[12rem] font-black tracking-tighter leading-none text-transparent animate-pulse"
+             style={{ 
+               WebkitTextStroke: '2px #E86D44',
+               filter: 'blur(1px)',
+               transform: 'scale(1.02)'
+             }}
+           >
+             VOUCH
+           </h1>
         </div>
+
+        {/* Layer 2: Solid Glowing Reveal (Masked) */}
+        <div 
+            className="absolute inset-0 flex items-center justify-center select-none"
+            style={{ 
+                clipPath: `polygon(0 0, 100% 0, 100% ${scanProgress}%, 0 ${scanProgress}%)`
+            }}
+        >
+            <h1 className="text-[15vw] md:text-[12rem] font-black tracking-tighter leading-none text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.6)]">
+                VOUCH
+            </h1>
+        </div>
+
+        {/* The Laser Scanner */}
+        <div 
+            className="absolute left-0 w-full h-[4px] bg-[#F0543C] shadow-[0_0_50px_#F0543C,0_0_20px_#fff] z-20"
+            style={{ 
+                top: `${scanProgress}%`,
+                opacity: scanProgress >= 100 ? 0 : 1,
+                transition: 'opacity 0.2s'
+            }}
+        >
+            {/* Data Noise Trail */}
+            <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#F0543C]/30 to-transparent pointer-events-none"></div>
+        </div>
+
+      </div>
+
+      {/* Status Text - Monospace */}
+      <div className="absolute bottom-12 left-6 md:left-12 font-mono text-[#F0543C] text-xs md:text-sm font-bold tracking-widest flex items-center gap-3">
+         <span className={`w-2 h-2 bg-[#F0543C] ${scanProgress < 100 ? 'animate-ping' : ''}`}></span>
+         {statusText}
       </div>
     </div>
   );
@@ -60,6 +108,7 @@ const FocusCursor = () => {
     // DIRECT DOM MANIPULATION FOR ZERO LAG
     const onMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
+      // Use translate3d for GPU acceleration
       const transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`;
       if (dotRef.current) dotRef.current.style.transform = transform;
       if (ringRef.current) ringRef.current.style.transform = transform;
@@ -119,39 +168,68 @@ const FocusCursor = () => {
 
 // --- COMPONENT: SIGN-IN GATEWAY ---
 const SignIn = ({ onLogin }: { onLogin: (name: string) => void }) => {
-  const [email, setEmail] = useState('');
+  const [nameInput, setNameInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleDirectEntry = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock Auth Delay
+    // Mimic processing delay
     setTimeout(() => {
-        onLogin("Tanishk"); // Defaulting to requested persona
-    }, 1200);
+        onLogin(nameInput || "Tanishk"); 
+    }, 800);
+  };
+
+  const handleSocialLogin = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        onLogin("Tanishk");
+      }, 800);
   };
 
   return (
     <div className="min-h-screen bg-[#F5F1E6] flex flex-col items-center justify-center p-6 relative overflow-hidden">
         {/* Abstract Background Elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/40 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/40 rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="relative z-10 w-full max-w-md animate-in slide-in-from-bottom-8 fade-in duration-700">
-            <div className="bg-white rounded-[2.5rem] shadow-[16px_16px_0px_rgba(26,26,26,0.05)] border-4 border-white p-8 md:p-12 text-center">
+            <div className="bg-white rounded-[2.5rem] shadow-[16px_16px_0px_rgba(26,26,26,0.05)] border-4 border-white p-8 md:p-10 text-center">
                 
-                <div className="w-16 h-16 bg-[#1A1A1A] rounded-2xl mx-auto mb-8 flex items-center justify-center text-[#F0543C] shadow-lg transform rotate-3">
-                    <Fingerprint size={32} />
+                {/* Brand Header */}
+                <div className="flex flex-col items-center mb-10">
+                    <div className="w-16 h-16 bg-[#1A1A1A] rounded-2xl flex items-center justify-center text-[#F0543C] shadow-lg transform -rotate-3 mb-4">
+                        <Fingerprint size={32} />
+                    </div>
+                    <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter">VOUCH</h1>
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">Integrity Engine v1.0</p>
                 </div>
 
-                <h2 className="text-3xl font-black text-[#1A1A1A] mb-2 tracking-tight">Access The Studio</h2>
-                <p className="text-gray-400 font-medium mb-8">Secure your voice before you speak.</p>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <button type="button" className="w-full bg-[#F5F1E6] hover:bg-[#eae4d3] text-[#1A1A1A] font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-colors border-2 border-transparent hover:border-[#1A1A1A]/10">
-                        <span className="text-xl">G</span> Continue with Google
+                <div className="space-y-4">
+                    {/* Google Button */}
+                    <button 
+                        onClick={handleSocialLogin}
+                        className="w-full bg-white hover:bg-gray-50 text-[#1A1A1A] font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-95 border-2 border-gray-200 hover:border-gray-300"
+                    >
+                        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="matrix(1, 0, 0, 1, 0, 0)">
+                                <path fill="#4285F4" d="M23.745,12.27c0-0.743-0.067-1.462-0.189-2.162H12.225v4.09h6.457c-0.279,1.504-1.127,2.778-2.396,3.633v3.016h3.879C22.435,18.728,23.745,15.719,23.745,12.27z"/>
+                                <path fill="#34A853" d="M12.225,24c3.24,0,5.957-1.074,7.942-2.906l-3.879-3.016c-1.075,0.721-2.451,1.146-4.063,1.146c-3.124,0-5.772-2.111-6.72-4.953H1.549v3.116C3.513,21.289,7.568,24,12.225,24z"/>
+                                <path fill="#FBBC05" d="M5.505,14.271c-0.24-0.72-0.377-1.49-0.377-2.271s0.137-1.551,0.377-2.271V6.613H1.549c-1.786,3.56-1.786,7.777,0,11.336L5.505,14.271z"/>
+                                <path fill="#EA4335" d="M12.225,4.75c1.761,0,3.344,0.613,4.587,1.801l3.44-3.44C18.177,1.143,15.358,0,12.225,0C7.568,0,3.513,2.711,1.549,6.613l3.956,3.116C6.453,6.861,9.101,4.75,12.225,4.75z"/>
+                            </g>
+                        </svg>
+                        Continue with Google
                     </button>
-                    <button type="button" className="w-full bg-[#1A1A1A] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-lg">
-                        <Apple size={20} fill="white" /> Continue with Apple
+
+                    {/* Apple Button (Official Solid Logo) */}
+                    <button 
+                        onClick={handleSocialLogin}
+                        className="w-full bg-black text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-95 border-2 border-black hover:bg-gray-900"
+                    >
+                         <svg width="20" height="20" viewBox="0 0 384 512" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z"/>
+                        </svg>
+                        Continue with Apple
                     </button>
 
                     <div className="relative py-4">
@@ -159,40 +237,34 @@ const SignIn = ({ onLogin }: { onLogin: (name: string) => void }) => {
                             <div className="w-full border-t border-gray-100"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-gray-400 font-bold tracking-widest">Or Magic Link</span>
+                            <span className="bg-white px-2 text-gray-400 font-bold tracking-widest">Or Enter Studio</span>
                         </div>
                     </div>
 
-                    <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                        <input 
-                            type="email" 
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@creator.com" 
-                            className="w-full pl-12 pr-4 py-4 bg-[#F5F1E6] rounded-xl font-bold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F0543C] transition-all placeholder:text-gray-400"
+                    {/* Direct Entry Form */}
+                    <form onSubmit={handleDirectEntry} className="space-y-3">
+                         <input 
+                            type="text" 
+                            value={nameInput}
+                            onChange={(e) => setNameInput(e.target.value)}
+                            placeholder="Your Name (e.g. Tanishk)" 
+                            className="w-full bg-[#F5F1E6] rounded-xl px-4 py-4 font-bold text-[#1A1A1A] text-center outline-none focus:ring-2 focus:ring-[#F0543C] transition-all placeholder:text-gray-400"
                         />
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        disabled={isLoading}
-                        className="w-full bg-[#E86D44] text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-[4px_4px_0px_#1A1A1A] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A] active:translate-y-[0px] active:shadow-none transition-all flex items-center justify-center gap-2"
-                    >
-                        {isLoading ? 'Verifying...' : 'Enter Vouch'} <ArrowRight size={18} />
-                    </button>
-                </form>
-
-                <p className="text-xs text-gray-400 font-bold mt-8">
-                    By entering, you agree to our <a href="#" className="underline hover:text-[#F0543C]">Manifesto</a>.
-                </p>
+                        <button 
+                            type="submit" 
+                            disabled={isLoading}
+                            className="w-full bg-[#E86D44] text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-[4px_4px_0px_#1A1A1A] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A] active:translate-y-[0px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? <Loader2 className="animate-spin" /> : <>ENTER THE STUDIO <ArrowRight size={18} /></>}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
         
-        <div className="absolute bottom-8 text-center text-[#1A1A1A]/20 font-black text-sm uppercase tracking-[0.5em]">
-            Integrity Engine v1.0
-        </div>
+        <p className="absolute bottom-8 text-xs text-[#1A1A1A]/30 font-bold max-w-xs text-center">
+            By entering, you accept our <a href="#" className="underline hover:text-[#F0543C]">Terms of Integrity</a>.
+        </p>
     </div>
   );
 };
@@ -214,7 +286,7 @@ const OnboardingTour = ({ user, onClose }: { user: UserProfile; onClose: () => v
 
   const steps = [
     {
-      title: `Welcome, ${user.name.split(' ')[0]}.`,
+      title: `Welcome, ${user.name.split(' ')[0] || 'Creator'}.`,
       desc: "Let's secure your voice. VOUCH is the first integrity engine designed to catch liabilities before the algorithm does.",
       icon: <ShieldCheck size={48} className="text-[#F0543C]" />,
       color: "border-[#F0543C]"
@@ -289,7 +361,7 @@ function App() {
   // GLOBAL IDENTITY STATE
   const [user, setUser] = useState<UserProfile>({
     name: '', // Empty until login
-    role: 'HCD / UI UX Design',
+    role: 'HCD / UI UX Design', // Default Credential
   });
 
   // PERSISTENT STUDIO STATE
@@ -309,9 +381,11 @@ function App() {
   };
 
   const handleLogin = (name: string) => {
-      setUser(prev => ({ ...prev, name }));
+      // Live Identity Update
+      setUser(prev => ({ ...prev, name: name }));
       setIsAuthenticated(true);
       setShowOnboarding(true);
+      window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const setActivePage = (page: 'home' | 'spectrum' | 'studio' | 'contact' | 'profile') => {

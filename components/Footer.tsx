@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Twitter, Instagram, Linkedin, ArrowRight, Check, Globe, Shield, HelpCircle, FileText } from 'lucide-react';
-import { Button } from './Button';
+import { Twitter, Instagram, Linkedin, ArrowRight, Check, Globe } from 'lucide-react';
 
 export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: string }> = ({ setPage, activePage }) => {
   const [email, setEmail] = useState('');
@@ -73,28 +72,28 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
            </div>
         </div>
 
-        {/* Middle Section: High-Density Links Grid */}
+        {/* Middle Section: High-Density Links Grid (4 Columns) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-24">
             
-            {/* Column 1: Product */}
+            {/* Column 1: Discover */}
             <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#F0543C] mb-4">Product</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#F0543C] mb-4">Discover</h3>
                 <ul className="space-y-4 font-bold text-gray-400 text-sm">
                     <li><button onClick={() => setPage('home')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Home</button></li>
                     <li><button onClick={() => setPage('spectrum')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">The Spectrum</button></li>
                     <li><button onClick={() => setPage('studio')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">The Studio</button></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Pricing')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Enterprise Pricing</a></li>
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Pricing')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Pricing</a></li>
                 </ul>
             </div>
 
-            {/* Column 2: Company */}
+            {/* Column 2: VOUCH Inc */}
             <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#00E8FF] mb-4">Company</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#00E8FF] mb-4">VOUCH Inc</h3>
                 <ul className="space-y-4 font-bold text-gray-400 text-sm">
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'About')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Manifesto</a></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Careers')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Careers <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded ml-2 text-white">Hiring</span></a></li>
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'About')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">About Us</a></li>
                     <li><a href="#" onClick={(e) => handleLinkClick(e, 'Brand')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Brand Kit</a></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Blog')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Transparency Log</a></li>
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Careers')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Careers</a></li>
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Blog')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Blog</a></li>
                 </ul>
             </div>
 
@@ -102,10 +101,10 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
             <div className="space-y-6">
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#FFCF36] mb-4">Support</h3>
                 <ul className="space-y-4 font-bold text-gray-400 text-sm">
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Help')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Help Center</a></li>
                     <li><button onClick={() => setPage('contact')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Contact Us</button></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'FAQ')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">FAQ</a></li>
                     <li><a href="#" onClick={(e) => handleLinkClick(e, 'Status')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block flex items-center gap-2">
-                        <span className="w-2 h-2 bg-[#7BC65C] rounded-full animate-pulse"></span> Systems Normal
+                        <span className="w-2 h-2 bg-[#7BC65C] rounded-full animate-pulse"></span> System Status
                     </a></li>
                 </ul>
             </div>
@@ -116,8 +115,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
                 <ul className="space-y-4 font-bold text-gray-400 text-sm">
                     <li><a href="#" onClick={(e) => handleLinkClick(e, 'Privacy')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Privacy Policy</a></li>
                     <li><a href="#" onClick={(e) => handleLinkClick(e, 'Terms')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Terms of Service</a></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Security')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Security Audit</a></li>
-                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Cookies')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Cookie Settings</a></li>
+                    <li><a href="#" onClick={(e) => handleLinkClick(e, 'Security')} className="hover:text-white transition-colors hover:translate-x-1 duration-200 inline-block">Security</a></li>
                 </ul>
             </div>
 
@@ -127,7 +125,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
         <div className="w-full flex flex-col md:flex-row justify-between items-end gap-8 pt-8 border-t border-white/10">
           
           <div className="text-xs font-black uppercase tracking-widest text-gray-600 order-2 md:order-1 flex-1">
-             © 2026 VOUCH INC. <br/> San Francisco • Bangalore • London
+             © 2026 VOUCH INC. <br/> Bangalore
           </div>
 
           <div className="order-1 md:order-2">

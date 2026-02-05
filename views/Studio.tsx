@@ -3,7 +3,7 @@ import { Platform, Flag, StudioState, Severity } from '../types';
 import { Button } from '../components/Button';
 import { Waveform } from '../components/Waveform';
 import { FlagCard } from '../components/FlagCard';
-import { Upload, CheckCircle, RefreshCw, Trash2, Settings, Loader2, ListPlus, Video, Mic, Eye, Check, AlertTriangle, Shield, Power, ToggleLeft, ToggleRight, LayoutTemplate, Type, QrCode, Info, FileText, Highlighter, X, Download, FileAudio, SearchCheck } from 'lucide-react';
+import { Upload, CheckCircle, RefreshCw, Trash2, Settings, Loader2, ListPlus, Video, Mic, Eye, Check, AlertTriangle, Shield, Power, ToggleLeft, ToggleRight, LayoutTemplate, Type, QrCode, Info, FileText, Highlighter, X, Download, FileAudio, SearchCheck, RotateCcw } from 'lucide-react';
 
 interface StudioProps {
     studioState: StudioState;
@@ -188,6 +188,11 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
         }, 2000); // 2 second mock processing time
     };
 
+    const handleResetExport = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
+        setReadyExportId(null);
+    };
+
     const themeColors: Record<Platform, string> = {
         YouTube: '#FF0000',
         Spotify: '#1DB954',
@@ -309,37 +314,49 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                                             const isProcessing = processingExportId === opt.id;
                                             const isReady = readyExportId === opt.id;
                                             return (
-                                                <button
-                                                    key={opt.id}
-                                                    onClick={() => triggerExport(opt.id)}
-                                                    data-cursor="hover"
-                                                    className={`
-                                                        relative h-24 rounded-2xl border-2 font-bold transition-all duration-300 flex flex-col items-center justify-center gap-2 overflow-hidden
-                                                        ${isReady 
-                                                            ? 'bg-[#7BC65C] border-[#7BC65C] text-[#1A1A1A] shadow-[0_0_20px_rgba(123,198,92,0.4)] scale-105 z-10' 
-                                                            : isProcessing 
-                                                                ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white' 
-                                                                : 'bg-white border-transparent hover:border-[#1A1A1A] text-[#1A1A1A] hover:-translate-y-1 shadow-md'
-                                                        }
-                                                    `}
-                                                >
-                                                    {isProcessing ? (
-                                                        <>
-                                                            <Loader2 className="animate-spin" />
-                                                            <span className="text-xs uppercase tracking-widest">Processing...</span>
-                                                        </>
-                                                    ) : isReady ? (
-                                                        <div className="animate-in fade-in zoom-in duration-300 flex flex-col items-center">
-                                                            <Download className="animate-bounce" />
-                                                            <span className="text-xs font-black uppercase tracking-widest mt-1">DOWNLOAD NOW</span>
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            {opt.icon}
-                                                            <span className="text-sm">{opt.label}</span>
-                                                        </>
+                                                <div key={opt.id} className="relative group/btn">
+                                                    <button
+                                                        onClick={() => triggerExport(opt.id)}
+                                                        disabled={isProcessing}
+                                                        data-cursor={isReady ? "hover" : "default"}
+                                                        className={`
+                                                            w-full h-24 rounded-2xl border-2 font-bold transition-all duration-300 flex flex-col items-center justify-center gap-2 overflow-hidden
+                                                            ${isReady 
+                                                                ? 'bg-[#7BC65C] border-[#7BC65C] text-[#1A1A1A] shadow-[0_0_20px_rgba(123,198,92,0.4)] scale-105 z-10' 
+                                                                : isProcessing 
+                                                                    ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white cursor-wait' 
+                                                                    : 'bg-white border-transparent hover:border-[#1A1A1A] text-[#1A1A1A] hover:-translate-y-1 shadow-md'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {isProcessing ? (
+                                                            <>
+                                                                <Loader2 className="animate-spin" />
+                                                                <span className="text-xs uppercase tracking-widest">Processing...</span>
+                                                            </>
+                                                        ) : isReady ? (
+                                                            <div className="animate-in fade-in zoom-in duration-300 flex flex-col items-center">
+                                                                <Download className="animate-bounce" />
+                                                                <span className="text-xs font-black uppercase tracking-widest mt-1">DOWNLOAD NOW</span>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                {opt.icon}
+                                                                <span className="text-sm">{opt.label}</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                    
+                                                    {isReady && (
+                                                        <button 
+                                                            onClick={(e) => handleResetExport(e, opt.id)}
+                                                            className="absolute -top-3 -right-3 bg-white text-[#1A1A1A] border-2 border-[#1A1A1A] rounded-full p-2 shadow-md hover:scale-110 transition-transform z-30"
+                                                            data-cursor="hover"
+                                                        >
+                                                            <RotateCcw size={14} />
+                                                        </button>
                                                     )}
-                                                </button>
+                                                </div>
                                             );
                                         })}
                                     </div>
