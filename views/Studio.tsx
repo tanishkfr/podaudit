@@ -3,7 +3,7 @@ import { Platform, Flag, StudioState, Severity } from '../types';
 import { Button } from '../components/Button';
 import { Waveform } from '../components/Waveform';
 import { FlagCard } from '../components/FlagCard';
-import { Upload, CheckCircle, RefreshCw, Trash2, Settings, Loader2, ListPlus, Video, Mic, Eye, Check, AlertTriangle, Shield, Power, ToggleLeft, ToggleRight, LayoutTemplate, Type, QrCode, Info, FileText, Highlighter, X, Download, FileAudio, SearchCheck, RotateCcw, AlertOctagon } from 'lucide-react';
+import { Upload, CheckCircle, RefreshCw, Trash2, Settings, Loader2, ListPlus, Video, Mic, Eye, Check, AlertTriangle, Shield, Power, ToggleLeft, ToggleRight, LayoutTemplate, Type, QrCode, Info, FileText, Highlighter, X, Download, FileAudio, SearchCheck, RotateCcw, AlertOctagon, Youtube, Music, Globe, Search } from 'lucide-react';
 
 interface StudioProps {
     studioState: StudioState;
@@ -61,6 +61,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
     const [isNuking, setIsNuking] = useState(false);
     const [nukeProgress, setNukeProgress] = useState(0);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Mock Scanning Logic
     const startScan = (file: File) => {
@@ -75,6 +76,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
         setProcessingExportId(null);
         setIsNuking(false);
         setNukeProgress(0);
+        setSearchQuery('');
         
         // Simulate progress
         let progress = 0;
@@ -232,6 +234,13 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
 
     const highRiskCount = studioState.flags.filter(f => (f.severity === 'red' || f.severity === 'orange') && f.status !== 'resolved').length;
 
+    // Filter Logic
+    const filteredFlags = studioState.flags.filter(f => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return f.transcript.toLowerCase().includes(q) || f.aiReason.toLowerCase().includes(q);
+    });
+
     return (
         <div className="w-full pt-32 pb-20 px-6 min-h-screen">
              <Toast message={toastMessage} />
@@ -256,7 +265,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                             <button
                                 key={p}
                                 onClick={() => setStudioState(prev => ({ ...prev, platform: p }))}
-                                className={`px-6 py-3 rounded-full font-black text-sm uppercase transition-all duration-300 ${
+                                className={`px-6 py-3 rounded-full font-black text-sm uppercase transition-all duration-300 flex items-center gap-2 ${
                                     studioState.platform === p 
                                     ? 'text-white shadow-md scale-105' 
                                     : 'text-gray-400 hover:text-[#1A1A1A]'
@@ -264,6 +273,9 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                                 style={{ backgroundColor: studioState.platform === p ? themeColors[p] : 'transparent' }}
                                 data-cursor="hover"
                             >
+                                {p === 'YouTube' && <Youtube size={18} />}
+                                {p === 'Spotify' && <Music size={18} />}
+                                {p === 'General' && <Globe size={18} />}
                                 {p}
                             </button>
                         ))}
@@ -404,7 +416,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                         <div className="bg-[#1A1A1A] rounded-[2.5rem] p-6 min-h-[600px] flex flex-col relative overflow-hidden">
                              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
 
-                             <div className="flex flex-col gap-4 mb-8 relative z-10">
+                             <div className="flex flex-col gap-4 mb-4 relative z-10">
                                  <div className="flex items-center justify-between">
                                     <h3 className="text-2xl font-black text-white">Analysis Log</h3>
                                     <div className="bg-white/10 px-3 py-1 rounded-full text-xs font-bold text-white flex items-center gap-2">
@@ -434,6 +446,20 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                                          )}
                                      </button>
                                  )}
+
+                                 {/* SEARCH BAR */}
+                                 {studioState.status === 'complete' && (
+                                     <div className="relative mt-2">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={16} />
+                                        <input 
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Search transcripts..."
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm font-bold placeholder:text-white/20 outline-none focus:bg-white/10 focus:border-white/20 transition-all"
+                                        />
+                                     </div>
+                                 )}
                              </div>
 
                              <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar relative z-10">
@@ -453,7 +479,7 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                                          ))}
                                      </div>
                                 )}
-                                {studioState.status === 'complete' && studioState.flags.map(flag => (
+                                {studioState.status === 'complete' && filteredFlags.map(flag => (
                                     <FlagCard 
                                         key={flag.id} 
                                         flag={flag} 
@@ -462,7 +488,13 @@ export const Studio: React.FC<StudioProps> = ({ studioState, setStudioState }) =
                                         onFix={handleFix} 
                                     />
                                 ))}
-                                {studioState.status === 'complete' && studioState.flags.length === 0 && (
+                                {studioState.status === 'complete' && filteredFlags.length === 0 && searchQuery && (
+                                    <div className="text-center text-white/30 py-8">
+                                        <Search size={32} className="mx-auto mb-2 opacity-50" />
+                                        <p className="font-bold text-sm">No matches found.</p>
+                                    </div>
+                                )}
+                                {studioState.status === 'complete' && studioState.flags.length === 0 && !searchQuery && (
                                     <div className="text-center text-white/50 mt-20 animate-in fade-in zoom-in">
                                         <CheckCircle size={48} className="mx-auto mb-4 text-[#7BC65C]" />
                                         <p className="font-bold text-white">No risks detected.</p>
