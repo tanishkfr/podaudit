@@ -30,23 +30,23 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
         <div className="max-w-7xl mx-auto z-10 space-y-12">
            <div className="inline-flex items-center gap-3 bg-black/20 backdrop-blur-md px-6 py-3 rounded-full border border-black/10 text-[#1A1A1A] font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all cursor-pointer shadow-lg hover:scale-105">
               <span className="w-3 h-3 bg-white rounded-full animate-ping"></span>
-              The Algorithm Safety Net
+              The Integrity Engine
            </div>
 
            <h1 className="text-[14vw] md:text-[10rem] font-black text-[#1A1A1A] leading-[0.8] tracking-tighter drop-shadow-sm mix-blend-multiply animate-in slide-in-from-bottom-10 fade-in duration-1000 delay-200">
-             REAL TRUTH. <br/>
+             VOUCH <br/>
              <span className="text-white relative drop-shadow-xl">
-               NO STRIKES.
+               FOR IT.
              </span>
            </h1>
            
            <p className="text-2xl md:text-4xl font-bold text-[#1A1A1A] max-w-4xl mx-auto leading-tight tracking-tight animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-300">
-             We audit your content for liability, cancellation risks, and advertiser safety <span className="underline decoration-4 decoration-white">before</span> you hit publish.
+             The only platform that scans your content for liability, brand risks, and misinfo <span className="underline decoration-4 decoration-white">before</span> the algorithm strikes.
            </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center mt-8 scale-110 origin-top animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-500">
                 <Button size="lg" variant="primary" onClick={() => setPage('studio')} icon={<Zap size={24} />}>
-                    Start Audit
+                    Start Scan
                 </Button>
                 <Button size="lg" variant="neutral" onClick={() => setPage('spectrum')}>
                     View The Logic
@@ -116,7 +116,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                 </h2>
                 <div className="space-y-6 text-xl font-medium text-gray-400">
                      <p className="leading-relaxed border-l-4 border-[#F0543C] pl-6 py-2">
-                        Once a file is processed and you close the Studio, the temporary processing cache is completely purged. 
+                        Once a file is processed and you close the VOUCH Studio, the temporary processing cache is completely purged. 
                         <span className="text-white font-bold block mt-2">No logs. No leaks. No training data.</span>
                      </p>
                 </div>
@@ -141,7 +141,7 @@ export const Home: React.FC<{ setPage: (page: any) => void }> = ({ setPage }) =>
                 {[
                     { step: "01", title: "UPLOAD", desc: "Drag & drop your raw audio. We ingest wav, mp3, and m4a in a volatile sandbox.", icon: <Users /> },
                     { step: "02", title: "SCAN", desc: "The 150-point integrity check runs against current ad-safety guidelines.", icon: <FileSearch /> },
-                    { step: "03", title: "CLEAN", desc: "One-click 'Nuke' for liabilities, or 'Fix' for minor infractions.", icon: <ShieldCheck /> }
+                    { step: "03", title: "VOUCH", desc: "One-click 'Nuke' for liabilities, or 'Fix' for minor infractions.", icon: <ShieldCheck /> }
                 ].map((item, i) => (
                     <div key={i} className="flex flex-col md:flex-row gap-8 group animate-in slide-in-from-bottom-12 fade-in duration-700 relative z-10 bg-[#F5F1E6] p-4" style={{ animationDelay: `${i * 100}ms` }}>
                         <div className="flex-shrink-0">

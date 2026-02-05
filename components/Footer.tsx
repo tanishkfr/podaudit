@@ -23,10 +23,10 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
     <footer className="bg-[#1A1A1A] text-white pt-32 pb-12 px-6 mt-0 relative overflow-hidden border-t-[3px] border-[#333] w-full">
       
       {/* Massive Background Text */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full pointer-events-none select-none flex justify-center items-center opacity-30">
-        <h1 className="text-[20vw] font-black leading-none tracking-tighter" 
-            style={{ WebkitTextStroke: '2px #333333', color: 'transparent' }}>
-          AUDIT-POP
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full pointer-events-none select-none flex justify-center items-center opacity-10">
+        <h1 className="text-[25vw] font-black leading-none tracking-tighter" 
+            style={{ WebkitTextStroke: '4px #333333', color: 'transparent' }}>
+          VOUCH
         </h1>
       </div>
 
@@ -77,7 +77,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
                             type="email" 
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="STAY SPICY" 
+                            placeholder="STAY VOUCHED" 
                             className="bg-transparent w-full outline-none text-xl font-black placeholder:text-white/30 text-white uppercase tracking-wider"
                         />
                         <button 
@@ -95,7 +95,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
                         <Check size={28} /> 
                         <span>You're on the list.</span>
                    </div>
-                   <span className="text-sm opacity-60 uppercase tracking-widest text-white/60">Stay spicy! 🌶️</span>
+                   <span className="text-sm opacity-60 uppercase tracking-widest text-white/60">Verified safe.</span>
                </div>
            )}
         </div>
@@ -109,7 +109,7 @@ export const Footer: React.FC<{ setPage: (page: any) => void; activePage?: strin
           </div>
           
           <div className="text-xs font-black uppercase tracking-widest text-gray-600 w-full text-center order-1 md:order-2 md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
-            © 2026 AUDIT-POP INC.
+            © 2026 VOUCH INC.
           </div>
 
           <div className="flex gap-6 text-white order-3">

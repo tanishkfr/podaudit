@@ -34,7 +34,10 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag, onNuke, onFix }) => {
   }
 
   return (
-    <div className={`group relative bg-white rounded-[2rem] p-6 transition-all duration-300 hover:shadow-xl border border-transparent hover:border-black/5 animate-in slide-in-from-right-4`}>
+    <div 
+        className={`group relative bg-white rounded-[2rem] p-6 transition-all duration-300 hover:shadow-xl border border-transparent hover:border-black/5 animate-in slide-in-from-right-4`}
+        data-cursor={isRed ? "danger" : undefined}
+    >
       
       <div className="flex justify-between items-start mb-4 relative z-10">
         <div className="flex gap-3 items-center">

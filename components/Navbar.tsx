@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mic, Zap, User } from 'lucide-react';
+import { Mic, Zap, User, Fingerprint } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface NavbarProps {
@@ -20,13 +20,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage, user }) => 
             className="flex items-center gap-2 pl-4 cursor-pointer group" 
             onClick={() => setPage('home')}
           >
-            <div className="w-10 h-10 bg-[#F0543C] rounded-full flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-md border-2 border-white">
-              <Mic size={20} fill="currentColor" />
+            <div className="w-10 h-10 bg-[#1A1A1A] rounded-full flex items-center justify-center text-white group-hover:rotate-12 transition-transform shadow-md border-2 border-white">
+              <Fingerprint size={20} className="text-[#F0543C]" />
             </div>
-            <span className="text-2xl font-extrabold tracking-tight text-[#1A1A1A] hidden sm:block">AUDIT-POP</span>
+            <span className="text-2xl font-black tracking-tighter text-[#1A1A1A] hidden sm:block">VOUCH</span>
           </div>
 
-          {/* Center Links - Now includes Contact */}
+          {/* Center Links */}
           <div className="flex items-center bg-[#F5F1E6]/50 rounded-full p-1.5 gap-1">
             {['home', 'spectrum', 'studio', 'contact'].map((page) => (
               <button 
@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setPage, user }) => 
             className="hidden sm:flex items-center gap-2 bg-[#F0543C] text-white border-[3px] border-[#1A1A1A] px-6 py-2.5 rounded-full font-bold text-base shadow-[4px_4px_0px_#1A1A1A] hover:shadow-[6px_6px_0px_#1A1A1A] hover:translate-y-[-2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 group"
           >
             <Zap className="fill-current group-hover:animate-pulse" size={18} />
-            AUDIT NOW
+            AUDIT
           </button>
         </nav>
       </div>
